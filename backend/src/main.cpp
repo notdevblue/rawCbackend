@@ -5,7 +5,6 @@
 const int PORT = 30000;
 
 int main() {
-
     int serverSocket;
     serverSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
