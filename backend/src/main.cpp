@@ -1,11 +1,6 @@
 #include <iostream>
 
-#include <netinet/in.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-
-#include <unistd.h>
+#include <cl9s/teapot.h>
 
 const int PORT = 30000;
 
