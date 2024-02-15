@@ -49,25 +49,40 @@ namespace cl9s
         //  accepts client connection
         //
         // Returns:
-        //  client socket on Success
+        //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
-        const sock accept_client() const {
-            int clientSocket;
+        const sock accept_client() {
             sockaddr_in clientAddr;
             socklen_t clientLength;
 
             clientLength = sizeof(clientAddr);
-            clientSocket = accept(m_socket, (sockaddr*)&clientAddr, &clientLength);
+            m_client_socket = accept(m_socket, (sockaddr*)&clientAddr, &clientLength);
 
-            if (clientSocket < 0) {
+            if (m_client_socket < 0) {
                 perror("teapot_server::accept_client() > accept");
                 return EXIT_FAILURE;
             }
 
-            return clientSocket;
+            return EXIT_SUCCESS;
         }
+
+        // Summary:
+        //  send data to client
+        //
+        // Returns:
+        //  EXIT_SUCCESS on Success
+        //  EXIT_FAILURE on Fail
+        const int send(const char* response, bool close_socket_after_send = true) const {
+            write(m_client_socket, response, sizeof(response));
+
+            shutdown(m_client_socket, SHUT_RDWR);
+        }
+
+        // TODO: send 쪽 조금 생각해봐야 할 듯
+        // client socket 을 어떻게 처리할 것인지
 
     private:
         uint16_t m_port;
+        sock m_client_socket;
     };
 };
