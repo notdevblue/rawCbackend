@@ -26,9 +26,9 @@ int main() {
     "Install Gentoo Always!\n"
     ;
 
-    // std::cout << "Sending:\n" << response << "\nEnd of message" << std::endl;
+    std::cout << "Sending:\n" << response << "\nEnd of message" << std::endl;
 
-    serv.send(response, false);
+    serv.send(response, sizeof(response));
 
     return 0;
 }

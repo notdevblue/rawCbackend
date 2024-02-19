@@ -17,7 +17,7 @@ namespace cl9s
         }
 
         virtual ~teapot_server() {
-
+            close_connection();
         }
 
     public:
@@ -75,13 +75,12 @@ namespace cl9s
         // Returns:
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
-        const int send(const char* response, bool close_socket_after_send = true) const {
+        const int send(const char* response, const size_t& response_size) const {
             if (write(m_client_socket, response, sizeof(response)) < 0) {
                 perror("teapot_server::send() > write");
                 return EXIT_FAILURE;
             }
-
-            shutdown(m_client_socket, SHUT_RDWR);
+            
             return EXIT_SUCCESS;
         }
 
@@ -96,10 +95,28 @@ namespace cl9s
 
             do {
                 received = read(m_client_socket, buffer, buffer_size);
-            } while(received >= 0 && (int)buffer[received] != -1);
+
+                std::cout << (int)buffer[received] << std::endl;
+
+            } while(received > 0 && buffer[received] > 0);
 
             if (received < 0) {
                 perror("teapot_server::receive() > read");
+                return EXIT_FAILURE;
+            }
+
+            return EXIT_SUCCESS;
+        }
+
+        // Summary:
+        //  closes connection with client
+        //
+        // Returns:
+        //  EXIT_SUCCESS on Success
+        //  EXIT_FAILURE on Fail
+        const int close_connection(const int& how = SHUT_RDWR) {
+            if (shutdown(m_client_socket, how)) {
+                perror("teapot_server::close_connection() > shutdown");
                 return EXIT_FAILURE;
             }
 
