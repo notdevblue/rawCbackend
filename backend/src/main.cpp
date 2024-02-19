@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <cl9s/teapot_server.h>
+#include <memory.h>
 
 const int PORT = 30000;
 
@@ -29,7 +30,6 @@ int main() {
     std::cout << "Sending:\n" << response << "\nEnd of message" << std::endl;
 
     serv.send(response, sizeof(response));
-
+    
     return 0;
 }
-

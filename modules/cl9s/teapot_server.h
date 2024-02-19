@@ -121,6 +121,16 @@ namespace cl9s
             return EXIT_SUCCESS;
         }
 
+        // Summary:
+        //  check connection whether it's alive or not
+        // 
+        // Returns:
+        //  1 when connection is alive
+        //  0 when connection is closed
+        const bool is_alive() {
+            return write(m_client_socket, NULL, 0) < 0;
+        }
+
 
 
         // TODO: send 쪽 조금 생각해봐야 할 듯
