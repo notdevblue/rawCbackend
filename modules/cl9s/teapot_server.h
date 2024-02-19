@@ -76,7 +76,7 @@ namespace cl9s
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
         const int send(const char* response, const size_t& response_size) const {
-            if (write(m_client_socket, response, sizeof(response)) < 0) {
+            if (write(m_client_socket, response, response_size) < 0) {
                 perror("teapot_server::send() > write");
                 return EXIT_FAILURE;
             }
@@ -95,8 +95,6 @@ namespace cl9s
 
             do {
                 received = read(m_client_socket, buffer, buffer_size);
-
-                std::cout << (int)buffer[received] << std::endl;
 
             } while(received > 0 && buffer[received] > 0);
 
