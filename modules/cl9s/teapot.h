@@ -44,8 +44,8 @@ namespace cl9s
         // Returns:
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
-        const int close_socket(const int& how = SHUT_RDWR) const {
-            if (m_socket != 0) {
+        const int close_socket(const int& how = SHUT_RDWR) {
+            if (m_socket == 0) {
                 return EXIT_SUCCESS;
             }
 
@@ -53,6 +53,8 @@ namespace cl9s
                 perror("teapot::close_socket() > shutdown");
                 return EXIT_FAILURE;
             }
+
+            m_socket = 0;
 
             return EXIT_SUCCESS;
         }

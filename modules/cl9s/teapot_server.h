@@ -1,7 +1,7 @@
 #pragma once
 
 #include "teapot.h"
-
+#include <thread>
 
 namespace cl9s
 {
@@ -18,9 +18,16 @@ namespace cl9s
 
         virtual ~teapot_server() {
             close_connection();
+
+            // m_connection_thread.join();
         }
 
     public:
+        void handle_client_connection() {
+            create_socket();
+        }
+
+
         // Summary:
         //  bind socket and listen for connection.
         //
@@ -127,17 +134,13 @@ namespace cl9s
         // Returns:
         //  1 when connection is alive
         //  0 when connection is closed
-        const bool is_alive() {
+        const bool is_client_alive() {
             return write(m_client_socket, NULL, 0) < 0;
         }
-
-
-
-        // TODO: send 쪽 조금 생각해봐야 할 듯
-        // client socket 을 어떻게 처리할 것인지
 
     private:
         uint16_t m_port;
         sock m_client_socket;
+        std::thread m_connection_thread;
     };
 };

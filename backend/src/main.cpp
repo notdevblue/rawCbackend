@@ -7,18 +7,7 @@ const int PORT = 30000;
 
 int main() {
     cl9s::teapot_server serv = cl9s::teapot_server(30000);
-
-    std::cout << "server listening..." << std::endl;
-    serv.listen_connection();
-    cl9s::sock client_socket = serv.accept_client();
-
-    std::cout << "client connected." << std::endl;
-
     char buffer[4096];
-    serv.receive(buffer, sizeof(buffer));
-
-    std::cout << "Received:\n" << buffer << "\nEnd of message" << std::endl;
-
     char response[] =
     "HTTP/1.1 200 OK\n"
     "Content-Length: 22\n"
@@ -27,9 +16,42 @@ int main() {
     "Install Gentoo Always!\n"
     ;
 
-    std::cout << "Sending:\n" << response << "\nEnd of message" << std::endl;
+    while (true)
+    {
+        std::cout << "server listening..." << std::endl;
+        serv.listen_connection();
 
-    serv.send(response, sizeof(response));
+        cl9s::sock client_socket = serv.accept_client();
+        std::cout << "client connected." << std::endl;
+
+        serv.receive(buffer, sizeof(buffer));
+        serv.send(response, sizeof(response));
+
+        serv.close_connection();
+        serv.close_socket();
+
+        serv.handle_client_connection();
+        memset(buffer, 0, sizeof(buffer));
+    }
+
+
+    // favicon 요청을 함!
+    // std::cout << "server listening..." << std::endl;
+    // serv.listen_connection();
+
+    // client_socket = serv.accept_client();
+    // std::cout << "client connected." << std::endl;
+
+    // memset(buffer, 0, sizeof(buffer));
+
+    // serv.receive(buffer, sizeof(buffer));
+    // std::cout << "recv\n" << buffer << '\n';
+    // serv.send(response, sizeof(response));
+    // std::cout << "send\n";
+
+    // serv.close_connection();
+    // serv.close_socket();
+
     
     return 0;
 }
