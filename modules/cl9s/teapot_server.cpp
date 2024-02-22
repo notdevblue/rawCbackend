@@ -1,9 +1,12 @@
-#include "teapot_server.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <cstdlib>
 
+#include "teapot_server.h"
 
 namespace cl9s
 {
-    const int teapot_server::listen_connection(const int& address_family = AF_INET) const {
+    const int teapot_server::listen_connection(const int& address_family) const {
         sockaddr_in serverAddr;
         {
             serverAddr.sin_family = address_family;
@@ -23,4 +26,6 @@ namespace cl9s
 
         return EXIT_SUCCESS;
     }
+
+
 }

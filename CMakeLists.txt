@@ -6,7 +6,7 @@ project(
     LANGUAGES CXX
 )
 
-set(outputName ${PROJECT_NAME}.out)
+set(outputName imateapot.out)
 set(modulePath ${CMAKE_SOURCE_DIR}/modules)
 
 add_executable(

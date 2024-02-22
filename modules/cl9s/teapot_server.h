@@ -33,7 +33,7 @@ namespace cl9s
         // Returns:
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
-        const int listen_connection(const int&) const;
+        const int listen_connection(const int& = AF_INET) const;
 
         // Summary:
         //  accepts client connection
