@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include <cl9s/teapot_server.h>
 #include <memory.h>
@@ -16,6 +17,10 @@ int main() {
     "Install Gentoo Always!\n"
     ;
 
+    std::string delimiter = "\n";
+
+    
+
     while (true)
     {
         std::cout << "server listening..." << std::endl;
@@ -25,10 +30,19 @@ int main() {
         std::cout << "client connected." << std::endl;
 
         serv.receive(buffer, sizeof(buffer));
+
+        std::cout << buffer << std::endl;
+
         serv.send(response, sizeof(response));
 
         serv.close_connection();
         serv.close_socket();
+
+        std::string strBuffer = buffer;
+        std::string token = strBuffer.substr(0, strBuffer.find(delimiter));
+
+        std::cout << "Header: " << token << std::endl;
+
 
         serv.handle_client_connection();
         memset(buffer, 0, sizeof(buffer));
