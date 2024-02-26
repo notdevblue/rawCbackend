@@ -13,6 +13,7 @@ add_executable(
     ${outputName}
     ${CMAKE_SOURCE_DIR}/backend/src/main.cpp
     ${modulePath}/cl9s/teapot_server.cpp
+    ${modulePath}/cl9s/teapot_server_thread.cpp
 )
 
 target_include_directories(${outputName} PUBLIC ${CMAKE_SOURCE_DIR}/modules)

@@ -23,9 +23,10 @@ namespace cl9s
         }
 
     public:
-        void handle_client_connection() {
-            create_socket();
-        }
+        // Summary:
+        //  handles client connection
+        //  and invoke route funciton
+        const std::thread& handle_client_connection();
 
         // Summary:
         //  bind socket and listen for connection.

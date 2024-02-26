@@ -21,32 +21,32 @@ int main() {
 
     
 
-    while (true)
-    {
-        std::cout << "server listening..." << std::endl;
-        serv.listen_connection();
+    // while (true)
+    // {
+    //     std::cout << "server listening..." << std::endl;
+    //     serv.listen_connection();
 
-        cl9s::sock client_socket = serv.accept_client();
-        std::cout << "client connected." << std::endl;
+    //     cl9s::sock client_socket = serv.accept_client();
+    //     std::cout << "client connected." << std::endl;
 
-        serv.receive(buffer, sizeof(buffer));
+    //     serv.receive(buffer, sizeof(buffer));
 
-        std::cout << buffer << std::endl;
+    //     std::cout << buffer << std::endl;
 
-        serv.send(response, sizeof(response));
+    //     serv.send(response, sizeof(response));
 
-        serv.close_connection();
-        serv.close_socket();
+    //     serv.close_connection();
+    //     serv.close_socket();
 
-        std::string strBuffer = buffer;
-        std::string token = strBuffer.substr(0, strBuffer.find(delimiter));
+    //     std::string strBuffer = buffer;
+    //     std::string token = strBuffer.substr(0, strBuffer.find(delimiter));
 
-        std::cout << "Header: " << token << std::endl;
+    //     std::cout << "Header: " << token << std::endl;
 
 
-        serv.handle_client_connection();
-        memset(buffer, 0, sizeof(buffer));
-    }
+    //     // serv.handle_client_connection();
+    //     // memset(buffer, 0, sizeof(buffer));
+    // }
 
 
     // favicon 요청을 함!

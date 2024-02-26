@@ -67,7 +67,7 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    const int teapot_server::close_connection(const int& how = SHUT_RDWR) const {
+    const int teapot_server::close_connection(const int& how) const {
         if (shutdown(m_client_socket, how)) {
             perror("teapot_server::close_connection() > shutdown");
             return EXIT_FAILURE;
