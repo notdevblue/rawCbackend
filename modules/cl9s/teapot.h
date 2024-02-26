@@ -7,6 +7,10 @@
 #include <unistd.h> // if compiling on windows, uninstall windows
 #include <cstdlib>
 
+#define IN
+#define STOP_EXCEPTION -1
+#define STOP_SCHEDULED 0
+
 namespace cl9s
 {
     typedef int sock;
@@ -59,6 +63,8 @@ namespace cl9s
             return EXIT_SUCCESS;
         }
 
+        virtual void stop(const int& how, const char* errmsg = "") = 0;
+
     protected:
         // Summary:
         //  Creates socket.
@@ -67,18 +73,19 @@ namespace cl9s
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
         const int create_socket(
+            sock* listening_socket IN,
             const int& domain = PF_INET,
             const int& type = SOCK_STREAM,
             const int& protocol = IPPROTO_TCP
-        ) {
-            m_socket = socket(domain, type, protocol);
-            if (m_socket < 0) {
+        ) const {
+            *listening_socket = socket(domain, type, protocol);
+            if (listening_socket < 0) {
                 perror("teapot::create_socket() > socket");
                 return EXIT_FAILURE;
             }
 
             if (reuse_address == 1) {
-                if (setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &reuse_address, sizeof(int)) < 0) {
+                if (setsockopt(*listening_socket, SOL_SOCKET, SO_REUSEADDR, &reuse_address, sizeof(int)) < 0) {
                     perror("teapot::create_socket() > setsockopt");
                     return EXIT_FAILURE;
                 }
@@ -86,9 +93,6 @@ namespace cl9s
 
             return EXIT_SUCCESS;
         }
-        
-    protected:
-        sock m_socket;
 
     private:
         int reuse_address;

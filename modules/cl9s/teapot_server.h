@@ -1,6 +1,7 @@
 #pragma once
 
 #include "teapot.h"
+#include <memory>
 #include <thread>
 
 namespace cl9s
@@ -14,19 +15,21 @@ namespace cl9s
 
         teapot_server(const uint16_t& port, const int& reuse_address = 1) : teapot(false, reuse_address) {
             m_port = port;
+            m_bKeepAcceptConnection = true;
         }
 
         virtual ~teapot_server() {
             close_connection();
 
-            // m_connection_thread.join();
+            if (m_connection_thread != nullptr)
+                m_connection_thread.get()->join();
         }
 
     public:
         // Summary:
         //  handles client connection
         //  and invoke route funciton
-        const std::thread& handle_client_connection();
+        const std::shared_ptr<std::thread>& handle_client_connection();
 
         // Summary:
         //  bind socket and listen for connection.
@@ -76,9 +79,17 @@ namespace cl9s
         //  0 when connection is closed
         const bool is_client_alive() const;
 
+        virtual void stop(const int& how, const char* errmsg = "") override;
+
+    protected:
+        void handle_client_thread() ;
+
     private:
         uint16_t m_port;
         sock m_client_socket;
-        std::thread m_connection_thread;
+
+        bool m_bKeepAcceptConnection;
+
+        std::shared_ptr<std::thread> m_connection_thread;
     };
 };
