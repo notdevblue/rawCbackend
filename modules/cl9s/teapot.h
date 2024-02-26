@@ -8,6 +8,7 @@
 #include <cstdlib>
 
 #define IN
+#define OUT
 #define STOP_EXCEPTION -1
 #define STOP_SCHEDULED 0
 
@@ -20,10 +21,6 @@ namespace cl9s
     public:
         teapot(const bool& prevent_socket_creation = false, const int& reuse_address = 1) {
             this->reuse_address = reuse_address;
-
-            if (!prevent_socket_creation) {
-                create_socket();
-            }
         }
 
         virtual ~teapot() {
@@ -73,7 +70,7 @@ namespace cl9s
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
         const int create_socket(
-            sock* listening_socket IN,
+            sock* listening_socket IN OUT,
             const int& domain = PF_INET,
             const int& type = SOCK_STREAM,
             const int& protocol = IPPROTO_TCP

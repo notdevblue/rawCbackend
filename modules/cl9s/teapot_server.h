@@ -37,7 +37,9 @@ namespace cl9s
         // Returns:
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
-        const int listen_connection(const int& address_family = AF_INET) const;
+        const int listen_connection(
+            const sock& listening_socket,
+            const int& address_family = AF_INET) const;
 
         // Summary:
         //  accepts client connection
@@ -45,7 +47,7 @@ namespace cl9s
         // Returns:
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
-        const int accept_client();
+        const int accept_client(const sock& listening_socket, sock* client_socket OUT);
 
         // Summary:
         //  send data to client

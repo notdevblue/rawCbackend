@@ -6,7 +6,10 @@
 
 namespace cl9s
 {
-    const int teapot_server::listen_connection(const int& address_family) const {
+    const int teapot_server::listen_connection(
+        const sock& listening_socket,
+        const int& address_family) const
+    {
         sockaddr_in serverAddr;
         {
             serverAddr.sin_family = address_family;
@@ -14,12 +17,12 @@ namespace cl9s
             serverAddr.sin_port = htons(m_port);
         };
 
-        if (bind(m_socket, (sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+        if (bind(listening_socket, (sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
             perror("teapot_server::listen_connection() > bind");
             return EXIT_FAILURE;
         }
 
-        if (listen(m_socket, SOMAXCONN) < 0) {
+        if (listen(listening_socket, SOMAXCONN) < 0) {
             perror("teapot_server::listen_connection() > listen");
             return EXIT_FAILURE;
         }
@@ -27,14 +30,17 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    const int teapot_server::accept_client() {
+    const int teapot_server::accept_client(
+        const sock& listening_socket,
+        sock* client_socket OUT)
+    {
         sockaddr_in clientAddr;
         socklen_t clientLength;
 
         clientLength = sizeof(clientAddr);
-        m_client_socket = accept(m_socket, (sockaddr*)&clientAddr, &clientLength);
+        *client_socket = accept(listening_socket, (sockaddr*)&clientAddr, &clientLength);
 
-        if (m_client_socket < 0) {
+        if (*client_socket < 0) {
             perror("teapot_server::accept_client() > accept");
             return EXIT_FAILURE;
         }
