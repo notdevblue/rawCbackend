@@ -29,6 +29,7 @@ namespace cl9s
     void teapot_server::handle_client_thread() {
         unsigned char creating_failsafe = 0;
         unsigned char listening_failsafe = 0;
+        unsigned char accept_failsafe = 0;
         sock listening_socket;
 
         while (this->m_bKeepAcceptConnection) {
@@ -57,6 +58,17 @@ namespace cl9s
             listening_failsafe = 0;
 
             // accept client
+            sock client_socket;
+            if (this->accept_client(listening_socket, &client_socket) < 0) {
+                close(listening_socket);
+                ++accept_failsafe;
+
+                if (accept_failsafe >= DEAFULT_FAILSAFE_COUNT) {
+                    this->stop(STOP_EXCEPTION, "Accept failsafe");
+                    break;
+                }
+            }
+            accept_failsafe = 0;
         }
 
         close(listening_socket);
