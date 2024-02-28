@@ -10,7 +10,7 @@
 namespace cl9s
 {
     const std::shared_ptr<std::thread>& teapot_server::handle_client_connection() {
-        m_connection_thread = std::make_shared<std::thread>(handle_client_thread, this);
+        m_connection_thread = std::make_shared<std::thread>([this] { this->handle_client_connection(); });
 
         return m_connection_thread;
     }

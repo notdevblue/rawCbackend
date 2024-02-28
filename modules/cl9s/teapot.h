@@ -24,7 +24,6 @@ namespace cl9s
         }
 
         virtual ~teapot() {
-            close_socket();
         }
         // should draw structure tomorrow or some other day
 
@@ -45,17 +44,17 @@ namespace cl9s
         // Returns:
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
-        const int close_socket(const int& how = SHUT_RDWR) {
-            if (m_socket == 0) {
+        const int close_socket(sock& socket IN, const int& how = SHUT_RDWR) {
+            if (socket == 0) {
                 return EXIT_SUCCESS;
             }
 
-            if (shutdown(m_socket, how) < 0) {
+            if (shutdown(socket, how) < 0) {
                 perror("teapot::close_socket() > shutdown");
                 return EXIT_FAILURE;
             }
 
-            m_socket = 0;
+            socket = 0;
 
             return EXIT_SUCCESS;
         }
@@ -76,7 +75,7 @@ namespace cl9s
             const int& protocol = IPPROTO_TCP
         ) const {
             *listening_socket = socket(domain, type, protocol);
-            if (listening_socket < 0) {
+            if (*listening_socket < 0) {
                 perror("teapot::create_socket() > socket");
                 return EXIT_FAILURE;
             }
