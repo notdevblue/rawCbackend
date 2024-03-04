@@ -6,7 +6,7 @@ project(
     LANGUAGES CXX
 )
 
-set(outputName imateapot.out)
+set(outputName teapot.out)
 set(modulePath ${CMAKE_SOURCE_DIR}/modules)
 
 add_executable(

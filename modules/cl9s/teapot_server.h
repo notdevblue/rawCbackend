@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 #include "teapot.h"
 #include <memory>
@@ -6,7 +7,7 @@
 
 namespace cl9s
 {
-    #pragma SERVER_BUFFER_SIZE 4096
+    #define SERVER_BUFFER_SIZE 4096
 
     class teapot_server : public teapot 
     {
@@ -19,10 +20,9 @@ namespace cl9s
         }
 
         virtual ~teapot_server() {
-            close_connection();
-
-            if (m_connection_thread != nullptr)
+            if (m_connection_thread.get() != nullptr && m_connection_thread.get()->joinable()) {
                 m_connection_thread.get()->join();
+            }
         }
 
     public:
@@ -55,7 +55,10 @@ namespace cl9s
         // Returns:
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
-        const int send(const char* response, const size_t& response_size) const;
+        const int send(
+            const sock& client_socket,
+            const char* response,
+            const size_t& response_size) const;
 
         // Summary:
         //  receives data from client
@@ -63,7 +66,10 @@ namespace cl9s
         // Returns:
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILIRE on Fail
-        const int receive(char* buffer, const size_t& buffer_size) const;
+        const int receive(
+            const sock& client_sock,
+            char* buffer,
+            const size_t& buffer_size) const;
 
         // Summary:
         //  closes connection with client
@@ -71,7 +77,9 @@ namespace cl9s
         // Returns:
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
-        const int close_connection(const int& how = SHUT_RDWR) const;
+        const int close_connection(
+            const sock& client_socket,
+            const int& how = SHUT_RDWR) const;
 
         // Summary:
         //  check connection whether it's alive or not
@@ -79,16 +87,17 @@ namespace cl9s
         // Returns:
         //  1 when connection is alive
         //  0 when connection is closed
-        const bool is_client_alive() const;
+        const bool is_client_alive(const sock& client_socket) const;
+
+        std::unique_ptr<char[]> create_buffer(const int& size = SERVER_BUFFER_SIZE) const;
 
         virtual void stop(const int& how, const char* errmsg = "") override;
 
     protected:
-        void handle_client_thread() ;
+        void handle_client_thread();
 
     private:
         uint16_t m_port;
-        sock m_client_socket;
 
         bool m_bKeepAcceptConnection;
 

@@ -48,8 +48,12 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    const int teapot_server::send(const char* response, const size_t& response_size) const {
-        if (write(m_client_socket, response, response_size) < 0) {
+    const int teapot_server::send(
+        const sock& client_socket,
+        const char* response,
+        const size_t& response_size) const
+    {
+        if (write(client_socket, response, response_size) < 0) {
             perror("teapot_server::send() > write");
             return EXIT_FAILURE;
         }
@@ -57,12 +61,15 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    const int teapot_server::receive(char* buffer, const size_t& buffer_size) const {
+    const int teapot_server::receive(
+        const sock& client_socket,
+        char* buffer,
+        const size_t& buffer_size) const
+    {
         ssize_t received;
 
         do {
-            received = read(m_client_socket, buffer, buffer_size);
-
+            received = read(client_socket, buffer, buffer_size);
         } while(received > 0 && buffer[received] > 0);
 
         if (received < 0) {
@@ -73,8 +80,8 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    const int teapot_server::close_connection(const int& how) const {
-        if (shutdown(m_client_socket, how)) {
+    const int teapot_server::close_connection(const sock& client_socket, const int& how) const {
+        if (shutdown(client_socket, how)) {
             perror("teapot_server::close_connection() > shutdown");
             return EXIT_FAILURE;
         }
@@ -82,7 +89,11 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    const bool teapot_server::is_client_alive() const {
-        return write(m_client_socket, NULL, 0) < 0;
+    const bool teapot_server::is_client_alive(const sock& client_socket) const {
+        return write(client_socket, NULL, 0) < 0;
+    }
+
+    std::unique_ptr<char[]> teapot_server::create_buffer(const int& size) const {
+        return std::make_unique<char[]>(size);
     }
 }
