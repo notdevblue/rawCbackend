@@ -6,7 +6,7 @@
 
 #include "teapot_server.h"
 
-#define DEAFULT_FAILSAFE_COUNT 25
+#define DEAFULT_FAILSAFE_COUNT 50
 
 namespace cl9s
 {
