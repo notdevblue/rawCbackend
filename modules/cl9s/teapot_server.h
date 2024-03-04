@@ -96,6 +96,11 @@ namespace cl9s
     protected:
         void handle_client_thread();
 
+        sock handle_create();
+        const bool handle_listen(const sock& socket);
+        const bool handle_accept(const sock& listening_socket, sock& client_socket OUT);
+        const bool handle_receive_header(const sock& client_socket);
+
     private:
         uint16_t m_port;
 
