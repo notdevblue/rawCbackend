@@ -4,6 +4,9 @@
 #include "teapot.h"
 #include <memory>
 #include <thread>
+#include <string>
+#include <functional>
+#include <map>
 
 namespace cl9s
 {
@@ -107,5 +110,7 @@ namespace cl9s
         bool m_bKeepAcceptConnection;
 
         std::shared_ptr<std::thread> m_connection_thread;
+        std::map<std::string, std::function<void()>> m_route;
+    
     };
 };
