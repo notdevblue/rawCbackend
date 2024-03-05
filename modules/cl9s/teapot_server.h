@@ -12,6 +12,18 @@ namespace cl9s
 {
     #define SERVER_BUFFER_SIZE 4096
 
+    enum class request_method {
+        GET,
+        HEAD,
+        POST,
+        PUT,
+        DELETE,
+        CONNECT,
+        OPTIONS,
+        TRACE,
+        PATCH
+    };
+
     class teapot_server : public teapot 
     {
     public:
@@ -29,6 +41,9 @@ namespace cl9s
         }
 
     public:
+
+        void route(const request_method& method, const std::string& href, const std::function<void()> callback);
+
         // Summary:
         //  handles client connection
         //  and invoke route funciton
@@ -110,7 +125,6 @@ namespace cl9s
         bool m_bKeepAcceptConnection;
 
         std::shared_ptr<std::thread> m_connection_thread;
-        std::map<std::string, std::function<void()>> m_route;
-    
+        std::map<request_method, std::map<std::string, std::function<void()>>> m_route;
     };
 };
