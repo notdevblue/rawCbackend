@@ -12,7 +12,17 @@ namespace cl9s
 {
     #define SERVER_BUFFER_SIZE 4096
 
-    enum class request_method {
+    class request {
+
+    };
+
+    class response {
+
+    };
+
+    typedef std::function<void(request&, response&)> t_route_lambda;
+
+    enum class request_method : int {
         GET,
         HEAD,
         POST,
@@ -21,7 +31,8 @@ namespace cl9s
         CONNECT,
         OPTIONS,
         TRACE,
-        PATCH
+        PATCH,
+        END_OF_ENUM
     };
 
     class teapot_server : public teapot 
@@ -32,6 +43,7 @@ namespace cl9s
         teapot_server(const uint16_t& port, const int& reuse_address = 1) : teapot(false, reuse_address) {
             m_port = port;
             m_bKeepAcceptConnection = true;
+            m_route = std::map<request_method, std::map<std::string, t_route_lambda>>();
         }
 
         virtual ~teapot_server() {
@@ -42,7 +54,7 @@ namespace cl9s
 
     public:
 
-        void route(const request_method& method, const std::string& href, const std::function<void()> callback);
+        void route(const request_method& method, const std::string& href, const t_route_lambda& callback);
 
         // Summary:
         //  handles client connection
@@ -118,6 +130,16 @@ namespace cl9s
         const bool handle_listen(const sock& socket);
         const bool handle_accept(const sock& listening_socket, sock& client_socket OUT);
         const bool handle_receive_header(const sock& client_socket);
+    
+    private:
+        inline void init_route_map() {
+            for (request_method req_method = (request_method)0;
+                req_method < request_method::END_OF_ENUM;
+                req_method = (request_method)((int)req_method + 1))
+            {
+                m_route[req_method] = std::map<std::string, t_route_lambda>();
+            }
+        }
 
     private:
         uint16_t m_port;
@@ -125,6 +147,6 @@ namespace cl9s
         bool m_bKeepAcceptConnection;
 
         std::shared_ptr<std::thread> m_connection_thread;
-        std::map<request_method, std::map<std::string, std::function<void()>>> m_route;
+        std::map<request_method, std::map<std::string, t_route_lambda>> m_route;
     };
 };
