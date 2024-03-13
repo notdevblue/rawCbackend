@@ -99,11 +99,7 @@ namespace cl9s
 
     void teapot_server::route(const request_method& method, const std::string& href, const t_route_lambda& callback) {
         if (m_route[method][href] != NULL) {
-            std::cout << "Overwriting route: "
-                      << static_cast<typename std::underlying_type<request_method>::type>(method)
-                      << " "
-                      << href
-                      << std::endl;
+            std::cout << "Overwriting route: " << href << std::endl;
         }
 
         m_route[method][href] = callback;
