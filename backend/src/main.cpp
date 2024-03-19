@@ -9,6 +9,8 @@ const int PORT = 30000;
 int main() {
     cl9s::teapot_server serv = cl9s::teapot_server(PORT);
 
+    serv.route(cl9s::request_method::GET, "/", [](auto req, auto res) {});
+
     // TODO
     /*
     serv.get("/path1", [request, response] {});
