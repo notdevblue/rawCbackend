@@ -133,14 +133,20 @@ namespace cl9s
                 continue;
             }
 
-            char response[] =
+            char res[] =
             "HTTP/1.1 200 OK\n"
             "Content-Length: 22\n"
             "Content-Type: text/plain; charset=utf-8\n"
             "\n"
             "Install Gentoo Always!\n";
 
-            send(client_socket, response, sizeof(response));
+            request a;
+            response b;
+            
+
+            m_route[request_method::GET]["/"](a, b);
+
+            send(client_socket, res, sizeof(res));
             close_connection(client_socket);
 
             // TODO: route
