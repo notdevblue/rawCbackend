@@ -140,10 +140,16 @@ namespace cl9s
             "\n"
             "Install Gentoo Always!\n";
 
+            // TODO:
+            /*
+            요청 파싱해서 request method 랑 경로 아레에 넣고,
+            request, response 객채 생성해서 등록된 그거 실행.
+
+            없으면 404
+            */
+
             request a;
             response b;
-            
-
             m_route[request_method::GET]["/"](a, b);
 
             send(client_socket, res, sizeof(res));

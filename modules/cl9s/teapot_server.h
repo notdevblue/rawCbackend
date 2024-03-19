@@ -13,7 +13,28 @@ namespace cl9s
     #define SERVER_BUFFER_SIZE 4096
 
     class request {
+    public:
+        request(const std::string& header);
+        request(const request& other);
+        ~request() { }
 
+    public:
+        inline const std::string& getQuerystring() {
+            return m_querystring;
+        }
+
+        inline const std::string& getLocation() {
+            return m_location;
+        }
+
+        inline const std::string& getContent() {
+            return m_content;
+        }
+
+    private:
+        std::string m_querystring;
+        std::string m_location;
+        std::string m_content;
     };
 
     class response {
