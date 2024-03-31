@@ -14,8 +14,8 @@ namespace cl9s
 
     class request {
     public:
-        request(const std::string& header);
-        request(const request& other);
+        request(const std::string& header) {}
+        request(const request& other) {}
         ~request() { }
 
     public:
@@ -150,7 +150,7 @@ namespace cl9s
         sock handle_create();
         const bool handle_listen(const sock& socket);
         const bool handle_accept(const sock& listening_socket, sock& client_socket OUT);
-        const bool handle_receive_header(const sock& client_socket);
+        const bool handle_receive_header(const sock& client_socket, std::function<void(const char* buffer, const int& length)> callback);
     
     private:
         inline void init_route_map() {

@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <string.h>
 #include <thread>
 #include <unistd.h>
 #include <stdio.h>
@@ -85,13 +86,16 @@ namespace cl9s
         return true;
     }
 
-    const bool teapot_server::handle_receive_header(const sock& client_socket) {
+    const bool teapot_server::handle_receive_header(
+        const sock& client_socket,
+        std::function<void(const char* buffer, const int& len)> callback)
+    {
         static unsigned char receive_header_failsafe = 0;
 
         std::unique_ptr<char[]> unique_buffer = create_buffer(); // FIXME: use shared buffer instead
         char* buffer = unique_buffer.get();
 
-        if (receive(client_socket, buffer, sizeof(buffer)) < 0) {
+        if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) < 0) {
             close_connection(client_socket);
             ++receive_header_failsafe;
 
@@ -103,6 +107,8 @@ namespace cl9s
         }
 
         receive_header_failsafe = 0;
+
+        callback(buffer, strlen(buffer));
 
         return true;
     }
@@ -129,7 +135,15 @@ namespace cl9s
             }
 
             // receive header
-            if (!handle_receive_header(client_socket)) {
+            if (
+                !handle_receive_header(
+                    client_socket,
+                    [this](auto buffer, auto len) {
+                        std::cout << "buffer:\n" << buffer << "\nlength: " << len << std::endl;
+                    }
+                )
+            )
+            {
                 continue;
             }
 
@@ -148,7 +162,7 @@ namespace cl9s
             없으면 404
             */
 
-            request a;
+            request a = request("hello");
             response b;
             m_route[request_method::GET]["/"](a, b);
 
