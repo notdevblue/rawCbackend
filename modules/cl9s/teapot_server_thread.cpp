@@ -139,7 +139,10 @@ namespace cl9s
                 !handle_receive_header(
                     client_socket,
                     [this](auto buffer, auto len) {
+                        char* saveptr;
                         std::cout << "buffer:\n" << buffer << "\nlength: " << len << std::endl;
+
+                        strtok_r(const_cast<char *>(buffer), "", &saveptr);
                     }
                 )
             )
