@@ -139,10 +139,22 @@ namespace cl9s
                 !handle_receive_header(
                     client_socket,
                     [this](auto buffer, auto len) {
-                        char* saveptr;
                         std::cout << "buffer:\n" << buffer << "\nlength: " << len << std::endl;
+                        char* req_location;
+                        char* saveptr1;
+                        char* token;
+                        char* copiedstr = strdup(buffer);
 
-                        strtok_r(const_cast<char *>(buffer), "", &saveptr);
+                        token = strtok_r(copiedstr, "\n", &saveptr1);
+                        if (token == NULL) {
+                            free(copiedstr);
+                            return;
+                        }
+
+                        (void)strcpy(req_location, token);
+                        std::cout << req_location << std::endl;
+
+                        free(copiedstr);
                     }
                 )
             )
