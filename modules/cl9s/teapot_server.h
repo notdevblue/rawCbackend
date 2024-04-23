@@ -38,7 +38,25 @@ namespace cl9s
     };
 
     class response {
+    public:
+        response(const sock& client_socket)
+            : m_client_socket(client_socket)
+        {
+        }
 
+        inline const sock& get_client() const {
+            return m_client_socket;
+        }
+
+        /// @brief sends response to client
+        /// @param response response text
+        /// @param size response text size
+        inline void send_response(const char* response, size_t size) const {
+            teapot_server::send(m_client_socket, response, size);
+        }
+
+    private:
+        const sock& m_client_socket;
     };
 
     typedef std::function<void(request&, response&)> t_route_lambda;
@@ -105,10 +123,18 @@ namespace cl9s
         // Returns:
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
-        const int send(
+        static const int send(
             const sock& client_socket,
             const char* response,
-            const size_t& response_size) const;
+            const size_t& response_size)
+        {
+            if (write(client_socket, response, response_size) < 0) {
+                perror("teapot_server::send() > write");
+                return EXIT_FAILURE;
+            }
+
+            return EXIT_SUCCESS;
+        }
 
         // Summary:
         //  receives data from client
@@ -139,6 +165,9 @@ namespace cl9s
         //  0 when connection is closed
         const bool is_client_alive(const sock& client_socket) const;
 
+
+        // Summary:
+        //  sends 404 response
         void send_404_error(const sock& client_socket) const;
 
         std::unique_ptr<char[]> create_buffer(const int& size = SERVER_BUFFER_SIZE) const;

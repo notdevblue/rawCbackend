@@ -183,7 +183,7 @@ namespace cl9s
             }
 
             request a = request("hello");
-            response b;
+            response b = response(client_socket);
             inner_map->at(path)(a, b);
 
             close_connection(client_socket);

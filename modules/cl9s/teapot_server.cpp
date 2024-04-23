@@ -48,19 +48,6 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    const int teapot_server::send(
-        const sock& client_socket,
-        const char* response,
-        const size_t& response_size) const
-    {
-        if (write(client_socket, response, response_size) < 0) {
-            perror("teapot_server::send() > write");
-            return EXIT_FAILURE;
-        }
-        
-        return EXIT_SUCCESS;
-    }
-
     const int teapot_server::receive(
         const sock& client_socket,
         char* buffer,
