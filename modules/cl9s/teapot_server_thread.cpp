@@ -134,13 +134,13 @@ namespace cl9s
                 continue;
             }
 
+            char* method;
+            char* path;
             // receive header
             if (
                 !handle_receive_header(
                     client_socket,
-                    [this](auto buffer, auto len) {
-                        std::cout << "buffer:\n" << buffer << "\nlength: " << len << std::endl;
-                        char* req_location;
+                    [&method, &path](auto buffer, auto len) {
                         char* saveptr1;
                         char* token;
                         char* copiedstr = strdup(buffer);
@@ -151,8 +151,10 @@ namespace cl9s
                             return;
                         }
 
-                        (void)strcpy(req_location, token);
-                        std::cout << req_location << std::endl;
+                        saveptr1 = nullptr;
+
+                        method = strtok_r(token, " ", &saveptr1);
+                        path = strtok_r(NULL, " ", &saveptr1);
 
                         free(copiedstr);
                     }
@@ -162,30 +164,29 @@ namespace cl9s
                 continue;
             }
 
-            char res[] =
-            "HTTP/1.1 200 OK\n"
-            "Content-Length: 22\n"
-            "Content-Type: text/plain; charset=utf-8\n"
-            "\n"
-            "Install Gentoo Always!\n";
+            std::cout << "method: " << method << " path: " << path << std::endl;
 
-            // TODO:
-            /*
-            요청 파싱해서 request method 랑 경로 아레에 넣고,
-            request, response 객채 생성해서 등록된 그거 실행.
+            request_method req_method = this->request_method_from_string[method];
 
-            없으면 404
-            */
+            m_route_it = m_route.find(req_method);
+            if (m_route_it == m_route.end()) {
+                send_404_error(client_socket);
+                return;
+            }
+
+            const auto inner_map = &m_route[req_method];
+
+            m_route_path_it = inner_map->find(path);
+            if (m_route_path_it == inner_map->end()) {
+                send_404_error(client_socket);
+                return;
+            }
 
             request a = request("hello");
             response b;
-            m_route[request_method::GET]["/"](a, b);
+            inner_map->at(path)(a, b);
 
-            send(client_socket, res, sizeof(res));
             close_connection(client_socket);
-
-            // TODO: route
-
         } // while (m_bKeepAcceptConnection)
 
         printf("\n### handle client thread shutdown... ###\n\n");

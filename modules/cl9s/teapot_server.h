@@ -43,7 +43,7 @@ namespace cl9s
 
     typedef std::function<void(request&, response&)> t_route_lambda;
 
-    enum class request_method : int {
+    enum class request_method {
         GET,
         HEAD,
         POST,
@@ -56,8 +56,7 @@ namespace cl9s
         END_OF_ENUM
     };
 
-    class teapot_server : public teapot 
-    {
+    class teapot_server : public teapot {
     public:
         teapot_server(const teapot_server&) = delete;
 
@@ -140,6 +139,8 @@ namespace cl9s
         //  0 when connection is closed
         const bool is_client_alive(const sock& client_socket) const;
 
+        void send_404_error(const sock& client_socket) const;
+
         std::unique_ptr<char[]> create_buffer(const int& size = SERVER_BUFFER_SIZE) const;
 
         virtual void stop(const int& how, const char* errmsg = "") override;
@@ -169,5 +170,18 @@ namespace cl9s
 
         std::shared_ptr<std::thread> m_connection_thread;
         std::map<request_method, std::map<std::string, t_route_lambda>> m_route;
+        std::map<request_method, std::map<std::string, t_route_lambda>>::iterator m_route_it;
+        std::map<std::string, t_route_lambda>::iterator m_route_path_it;
+
+        std::unordered_map<const char*, request_method> request_method_from_string = {
+            {"GET", request_method::GET},
+            {"HEAD", request_method::HEAD},
+            {"POST", request_method::POST},
+            {"PUT", request_method::PUT},
+            {"DELETE", request_method::DELETE},
+            {"CONNECT", request_method::CONNECT},
+            {"OPTIONS", request_method::OPTIONS},
+            {"TRACE", request_method::TRACE},
+            {"PATCH", request_method::PATCH}};
     };
 };
