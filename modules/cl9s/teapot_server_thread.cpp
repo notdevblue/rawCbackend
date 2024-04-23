@@ -171,7 +171,7 @@ namespace cl9s
             m_route_it = m_route.find(req_method);
             if (m_route_it == m_route.end()) {
                 send_404_error(client_socket);
-                return;
+                break;
             }
 
             const auto inner_map = &m_route[req_method];
@@ -179,7 +179,7 @@ namespace cl9s
             m_route_path_it = inner_map->find(path);
             if (m_route_path_it == inner_map->end()) {
                 send_404_error(client_socket);
-                return;
+                break;
             }
 
             request a = request("hello");
