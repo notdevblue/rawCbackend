@@ -10,7 +10,9 @@
 
 namespace cl9s
 {
-    #define SERVER_BUFFER_SIZE 4096
+    class teapot_server;
+
+#define SERVER_BUFFER_SIZE 4096
 
     class request {
     public:
