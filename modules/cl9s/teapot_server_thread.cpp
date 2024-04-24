@@ -88,12 +88,13 @@ namespace cl9s
 
     const bool teapot_server::handle_receive_header(
         const sock& client_socket,
-        std::function<void(const char* buffer, const int& len)> callback)
+        std::function<const bool(const char* buffer, const int& len)> callback)
     {
         static unsigned char receive_header_failsafe = 0;
 
         std::unique_ptr<char[]> unique_buffer = create_buffer(); // FIXME: use shared buffer instead
         char* buffer = unique_buffer.get();
+
 
         if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) < 0) {
             close_connection(client_socket);
@@ -106,11 +107,13 @@ namespace cl9s
             return false;
         }
 
+#ifdef CONSOLE_LOG
+        std::cout << buffer << std::endl;
+#endif
+
         receive_header_failsafe = 0;
 
-        callback(buffer, strlen(buffer));
-
-        return true;
+        return callback(buffer, strlen(buffer));
     }
 
     void teapot_server::handle_client_thread() {
@@ -134,13 +137,13 @@ namespace cl9s
                 continue;
             }
 
-            char* method;
+            char method[7];
             char* path;
             // receive header
             if (
                 !handle_receive_header(
                     client_socket,
-                    [&method, &path](auto buffer, auto len) {
+                    [&method, &path](const char* buffer, const int& len) -> const bool {
                         char* saveptr1;
                         char* token;
                         char* copiedstr = strdup(buffer);
@@ -148,28 +151,33 @@ namespace cl9s
                         token = strtok_r(copiedstr, "\n", &saveptr1);
                         if (token == NULL) {
                             free(copiedstr);
-                            return;
+                            return false;
                         }
 
                         saveptr1 = nullptr;
 
-                        method = strtok_r(token, " ", &saveptr1);
-                        path = strtok_r(NULL, " ", &saveptr1);
+                        strcpy(method, strtok_r(token, " ", &saveptr1));
+                        path = strdup(strtok_r(NULL, " ", &saveptr1));
+
+                        if (method == NULL || path == NULL) {
+                            free(copiedstr);
+                            return false;
+                        }
 
                         free(copiedstr);
-                    }
-                )
-            )
-            {
+                        return true;
+                    })) {
                 continue;
             }
 
+#ifdef CONSOLE_LOG
             std::cout << "method: " << method << " path: " << path << std::endl;
-    
+#endif
             request_method req_method = str_to_request_method(method);
 
             m_route_it = m_route.find(req_method);
             if (m_route_it == m_route.end()) {
+                free(path);
                 send_404_error(client_socket);
                 continue;
             }
@@ -178,14 +186,13 @@ namespace cl9s
 
             m_route_path_it = inner_map->find(path);
             if (m_route_path_it == inner_map->end()) {
+                free(path);
                 send_404_error(client_socket);
                 continue;
             }
 
-            request a = request("hello");
-            response b = response(client_socket);
-            inner_map->at(path)(a, b);
-            
+            inner_map->at(path)(request("hello"), response(client_socket));
+            free(path);
         } // while (m_bKeepAcceptConnection)
 
         printf("\n### handle client thread shutdown... ###\n\n");

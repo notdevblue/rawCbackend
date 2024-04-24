@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.27)
 
+
 project(
     cl9
     VERSION 0.1
     LANGUAGES CXX
 )
 
+
 set(outputName teapot.out)
 set(modulePath ${CMAKE_SOURCE_DIR}/modules)
 
+add_compile_definitions(CONSOLE_LOG)
 add_executable(
     ${outputName}
     ${CMAKE_SOURCE_DIR}/backend/src/main.cpp

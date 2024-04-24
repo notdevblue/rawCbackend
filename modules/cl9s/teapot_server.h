@@ -16,7 +16,7 @@ namespace cl9s
 
 #define SERVER_BUFFER_SIZE 4096
 
-    typedef std::function<void(request&, response&)> t_route_lambda;
+    typedef std::function<void(request, response)> t_route_lambda;
 
     class teapot_server : public teapot {
     public:
@@ -117,7 +117,7 @@ namespace cl9s
         sock handle_create();
         const bool handle_listen(const sock& socket);
         const bool handle_accept(const sock& listening_socket, sock& client_socket OUT);
-        const bool handle_receive_header(const sock& client_socket, std::function<void(const char* buffer, const int& length)> callback);
+        const bool handle_receive_header(const sock& client_socket, std::function<const bool(const char* buffer, const int& length)> callback);
     
     private:
         inline void init_route_map() {
