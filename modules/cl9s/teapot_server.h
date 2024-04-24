@@ -159,7 +159,7 @@ namespace cl9s
         std::map<request_method, std::map<std::string, t_route_lambda>>::iterator m_route_it;
         std::map<std::string, t_route_lambda>::iterator m_route_path_it;
 
-        std::unordered_map<const char*, request_method> request_method_from_string = {
+        const std::unordered_map<const char*, request_method> request_method_from_string = {
             {"GET", request_method::GET},
             {"HEAD", request_method::HEAD},
             {"POST", request_method::POST},
@@ -178,17 +178,9 @@ namespace cl9s
         ~request() {}
 
     public:
-        inline const std::string& getQuerystring() {
-            return m_querystring;
-        }
-
-        inline const std::string& getLocation() {
-            return m_location;
-        }
-
-        inline const std::string& getContent() {
-            return m_content;
-        }
+        const std::string& get_querystring() const;
+        const std::string& get_location() const;
+        const std::string& get_content() const;
 
     private:
         std::string m_querystring;
@@ -202,16 +194,12 @@ namespace cl9s
             : m_client_socket(client_socket) {
         }
 
-        inline const sock& get_client() const {
-            return m_client_socket;
-        }
+        const sock& get_client() const;
 
         /// @brief sends response to client
         /// @param response response text
         /// @param size response text size
-        inline void send_response(const char* response, size_t size) const {
-            teapot_server::send(m_client_socket, response, size);
-        }
+        void send_response(const char* response, const size_t& size) const;
 
     private:
         const sock& m_client_socket;

@@ -6,8 +6,6 @@
 
 const int PORT = 30000;
 
-#include <string.h>
-
 int main() {
     cl9s::teapot_server serv = cl9s::teapot_server(PORT);
 

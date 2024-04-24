@@ -12,6 +12,7 @@ set(modulePath ${CMAKE_SOURCE_DIR}/modules)
 add_executable(
     ${outputName}
     ${CMAKE_SOURCE_DIR}/backend/src/main.cpp
+    ${modulePath}/cl9s/request_response.cpp
     ${modulePath}/cl9s/teapot_server.cpp
     ${modulePath}/cl9s/teapot_server_thread.cpp
 )

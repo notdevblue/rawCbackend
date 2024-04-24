@@ -166,7 +166,7 @@ namespace cl9s
 
             std::cout << "method: " << method << " path: " << path << std::endl;
 
-            request_method req_method = this->request_method_from_string[method];
+            request_method req_method = this->request_method_from_string.at(method);
 
             m_route_it = m_route.find(req_method);
             if (m_route_it == m_route.end()) {
