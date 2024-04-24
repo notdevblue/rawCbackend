@@ -185,8 +185,7 @@ namespace cl9s
             request a = request("hello");
             response b = response(client_socket);
             inner_map->at(path)(a, b);
-
-            close_connection(client_socket);
+            
         } // while (m_bKeepAcceptConnection)
 
         printf("\n### handle client thread shutdown... ###\n\n");

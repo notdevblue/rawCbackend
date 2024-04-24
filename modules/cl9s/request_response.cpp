@@ -18,6 +18,13 @@ namespace cl9s
         return m_client_socket;
     }
 
+    response::response(sock& client_socket) : m_client_socket(client_socket) {
+    }
+
+    response::~response() {
+        teapot_server::close_connection(m_client_socket);
+    }
+
     void response::send_response(const char* response, const size_t& size) const {
         teapot_server::send(m_client_socket, response, size);
     }

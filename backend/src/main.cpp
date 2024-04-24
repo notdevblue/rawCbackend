@@ -7,7 +7,7 @@ const int PORT = 30000;
 int main() {
     cl9s::teapot_server serv = cl9s::teapot_server(PORT);
 
-    serv.route(cl9s::request_method::GET, "/", [](cl9s::request req, cl9s::response res) {
+    serv.route(cl9s::request_method::GET, "/", [](const cl9s::request& req, const cl9s::response& res) {
         char result[] =
             "HTTP/1.1 200 OK\n"
             "Content-Length: 22\n"

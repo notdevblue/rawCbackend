@@ -67,15 +67,6 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    const int teapot_server::close_connection(const sock& client_socket, const int& how) const {
-        if (shutdown(client_socket, how)) {
-            perror("teapot_server::close_connection() > shutdown");
-            return EXIT_FAILURE;
-        }
-
-        return EXIT_SUCCESS;
-    }
-
     const bool teapot_server::is_client_alive(const sock& client_socket) const {
         return write(client_socket, NULL, 0) < 0;
     }
@@ -101,6 +92,6 @@ namespace cl9s
             "Not found.\n";
 
         send(client_socket, res, sizeof(res));
-        close_connection(client_socket);
+        teapot_server::close_connection(client_socket);
     }
 }

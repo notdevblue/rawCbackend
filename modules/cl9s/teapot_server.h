@@ -35,6 +35,28 @@ namespace cl9s
         }
 
     public:
+        // Summary:
+        //  send data to client
+        //
+        // Returns:
+        //  EXIT_SUCCESS on Success
+        //  EXIT_FAILURE on Fail
+        static const int send(
+            const sock& client_socket,
+            const char* response,
+            const size_t& response_size);
+
+        // Summary:
+        //  closes connection with client
+        //
+        // Returns:
+        //  EXIT_SUCCESS on Success
+        //  EXIT_FAILURE on Fail
+        static const int close_connection(
+            const sock& client_socket,
+            const int& how = SHUT_RDWR);
+
+    public:
 
         void route(const request_method& method, const std::string& href, const t_route_lambda& callback);
 
@@ -62,25 +84,6 @@ namespace cl9s
         const int accept_client(const sock& listening_socket, sock* client_socket OUT);
 
         // Summary:
-        //  send data to client
-        //
-        // Returns:
-        //  EXIT_SUCCESS on Success
-        //  EXIT_FAILURE on Fail
-        static const int send(
-            const sock& client_socket,
-            const char* response,
-            const size_t& response_size)
-        {
-            if (write(client_socket, response, response_size) < 0) {
-                perror("teapot_server::send() > write");
-                return EXIT_FAILURE;
-            }
-
-            return EXIT_SUCCESS;
-        }
-
-        // Summary:
         //  receives data from client
         //
         // Returns:
@@ -90,16 +93,6 @@ namespace cl9s
             const sock& client_sock,
             char* buffer,
             const size_t& buffer_size) const;
-
-        // Summary:
-        //  closes connection with client
-        //
-        // Returns:
-        //  EXIT_SUCCESS on Success
-        //  EXIT_FAILURE on Fail
-        const int close_connection(
-            const sock& client_socket,
-            const int& how = SHUT_RDWR) const;
 
         // Summary:
         //  check connection whether it's alive or not
@@ -166,9 +159,8 @@ namespace cl9s
 
     class response {
     public:
-        response(const sock& client_socket)
-            : m_client_socket(client_socket) {
-        }
+        response(sock& client_socket);
+        ~response();
 
         const sock& get_client() const;
 
@@ -178,9 +170,9 @@ namespace cl9s
         void send_response(const char* response, const size_t& size) const;
 
     private:
-        const char* create_body(const std::string& content) const;
+        
 
     private:
-        const sock& m_client_socket;
+        sock& m_client_socket;
     };
 };

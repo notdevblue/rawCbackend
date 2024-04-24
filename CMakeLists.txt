@@ -15,6 +15,7 @@ add_executable(
     ${modulePath}/cl9s/request_response.cpp
     ${modulePath}/cl9s/teapot_server.cpp
     ${modulePath}/cl9s/teapot_server_thread.cpp
+    ${modulePath}/cl9s/teapot_server_static.cpp
 )
 
 target_include_directories(${outputName} PUBLIC ${CMAKE_SOURCE_DIR}/modules)
