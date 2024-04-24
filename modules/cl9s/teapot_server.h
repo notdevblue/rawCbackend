@@ -11,55 +11,10 @@
 namespace cl9s
 {
     class teapot_server;
+    class request;
+    class response;
 
 #define SERVER_BUFFER_SIZE 4096
-
-    class request {
-    public:
-        request(const std::string& header) {}
-        request(const request& other) {}
-        ~request() { }
-
-    public:
-        inline const std::string& getQuerystring() {
-            return m_querystring;
-        }
-
-        inline const std::string& getLocation() {
-            return m_location;
-        }
-
-        inline const std::string& getContent() {
-            return m_content;
-        }
-
-    private:
-        std::string m_querystring;
-        std::string m_location;
-        std::string m_content;
-    };
-
-    class response {
-    public:
-        response(const sock& client_socket)
-            : m_client_socket(client_socket)
-        {
-        }
-
-        inline const sock& get_client() const {
-            return m_client_socket;
-        }
-
-        /// @brief sends response to client
-        /// @param response response text
-        /// @param size response text size
-        inline void send_response(const char* response, size_t size) const {
-            teapot_server::send(m_client_socket, response, size);
-        }
-
-    private:
-        const sock& m_client_socket;
-    };
 
     typedef std::function<void(request&, response&)> t_route_lambda;
 
@@ -214,5 +169,51 @@ namespace cl9s
             {"OPTIONS", request_method::OPTIONS},
             {"TRACE", request_method::TRACE},
             {"PATCH", request_method::PATCH}};
+    };
+
+    class request {
+    public:
+        request(const std::string& header) {}
+        request(const request& other) {}
+        ~request() {}
+
+    public:
+        inline const std::string& getQuerystring() {
+            return m_querystring;
+        }
+
+        inline const std::string& getLocation() {
+            return m_location;
+        }
+
+        inline const std::string& getContent() {
+            return m_content;
+        }
+
+    private:
+        std::string m_querystring;
+        std::string m_location;
+        std::string m_content;
+    };
+
+    class response {
+    public:
+        response(const sock& client_socket)
+            : m_client_socket(client_socket) {
+        }
+
+        inline const sock& get_client() const {
+            return m_client_socket;
+        }
+
+        /// @brief sends response to client
+        /// @param response response text
+        /// @param size response text size
+        inline void send_response(const char* response, size_t size) const {
+            teapot_server::send(m_client_socket, response, size);
+        }
+
+    private:
+        const sock& m_client_socket;
     };
 };
