@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
-
 #include <cl9s/teapot_server.h>
-#include <memory.h>
 
 const int PORT = 30000;
 

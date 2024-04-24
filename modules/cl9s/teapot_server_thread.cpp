@@ -165,13 +165,13 @@ namespace cl9s
             }
 
             std::cout << "method: " << method << " path: " << path << std::endl;
-
-            request_method req_method = this->request_method_from_string.at(method);
+    
+            request_method req_method = str_to_request_method(method);
 
             m_route_it = m_route.find(req_method);
             if (m_route_it == m_route.end()) {
                 send_404_error(client_socket);
-                break;
+                continue;
             }
 
             const auto inner_map = &m_route[req_method];
@@ -179,7 +179,7 @@ namespace cl9s
             m_route_path_it = inner_map->find(path);
             if (m_route_path_it == inner_map->end()) {
                 send_404_error(client_socket);
-                break;
+                continue;
             }
 
             request a = request("hello");

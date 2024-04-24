@@ -18,19 +18,6 @@ namespace cl9s
 
     typedef std::function<void(request&, response&)> t_route_lambda;
 
-    enum class request_method {
-        GET,
-        HEAD,
-        POST,
-        PUT,
-        DELETE,
-        CONNECT,
-        OPTIONS,
-        TRACE,
-        PATCH,
-        END_OF_ENUM
-    };
-
     class teapot_server : public teapot {
     public:
         teapot_server(const teapot_server&) = delete;
@@ -158,17 +145,6 @@ namespace cl9s
         std::map<request_method, std::map<std::string, t_route_lambda>> m_route;
         std::map<request_method, std::map<std::string, t_route_lambda>>::iterator m_route_it;
         std::map<std::string, t_route_lambda>::iterator m_route_path_it;
-
-        const std::unordered_map<const char*, request_method> request_method_from_string = {
-            {"GET", request_method::GET},
-            {"HEAD", request_method::HEAD},
-            {"POST", request_method::POST},
-            {"PUT", request_method::PUT},
-            {"DELETE", request_method::DELETE},
-            {"CONNECT", request_method::CONNECT},
-            {"OPTIONS", request_method::OPTIONS},
-            {"TRACE", request_method::TRACE},
-            {"PATCH", request_method::PATCH}};
     };
 
     class request {
@@ -200,6 +176,9 @@ namespace cl9s
         /// @param response response text
         /// @param size response text size
         void send_response(const char* response, const size_t& size) const;
+
+    private:
+        const char* create_body(const std::string& content) const;
 
     private:
         const sock& m_client_socket;

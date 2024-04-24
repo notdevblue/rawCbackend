@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <unistd.h> // if compiling on windows, uninstall windows
 #include <cstdlib>
+#include <unordered_map>
 
 #define IN
 #define OUT
@@ -16,27 +17,40 @@ namespace cl9s
 {
     typedef int sock;
 
+    enum class request_method {
+        GET,
+        HEAD,
+        POST,
+        PUT,
+        DELETE,
+        CONNECT,
+        OPTIONS,
+        TRACE,
+        PATCH,
+        END_OF_ENUM
+    };
+
     class teapot
     {
     public:
-        teapot(const bool& prevent_socket_creation = false, const int& reuse_address = 1) {
-            this->reuse_address = reuse_address;
+        teapot(const bool& prevent_socket_creation = false, const int& reuse_address = 1) : reuse_address(reuse_address){
+
+            request_method_from_string = {
+                {"GET", request_method::GET},
+                {"HEAD", request_method::HEAD},
+                {"POST", request_method::POST},
+                {"PUT", request_method::PUT},
+                {"DELETE", request_method::DELETE},
+                {"CONNECT", request_method::CONNECT},
+                {"OPTIONS", request_method::OPTIONS},
+                {"TRACE", request_method::TRACE},
+                {"PATCH", request_method::PATCH}
+            };
         }
 
         virtual ~teapot() {
         }
-        // should draw structure tomorrow or some other day
 
-        // what to do untimately,
-        // backend is backend.
-        // client application (let's go rust fuck yeah mega project) can connect via http protocol (or https idk)
-        // web browser can connecto via http protocol (or https idk)
-        // GET 0.0.0.0/?locat=<location> => backend sends today's weather as plain string
-        // GET 0.0.0.0/browser?locat=<location> => backend sends today's weather as pretty html, js, css
-
-        // willing that this class is used by server and client application,
-        // so no client or server specific codes.
-        // create derived class to write client or server specific codes.
     public:
         // Summary:
         //  Closes socket.
@@ -57,6 +71,10 @@ namespace cl9s
             socket = 0;
 
             return EXIT_SUCCESS;
+        }
+
+        const request_method& str_to_request_method(char* method) {
+            return request_method_from_string[method];
         }
 
         virtual void stop(const int& how, const char* errmsg = "") = 0;
@@ -89,6 +107,9 @@ namespace cl9s
 
             return EXIT_SUCCESS;
         }
+
+    private:
+        std::unordered_map<const char*, request_method> request_method_from_string;
 
     private:
         int reuse_address;
