@@ -108,7 +108,7 @@ namespace cl9s
         }
 
 #ifdef CONSOLE_LOG
-        std::cout << buffer << std::endl;
+        std::cout << "Received: \n" << buffer << std::endl;
 #endif
 
         receive_header_failsafe = 0;
@@ -169,10 +169,7 @@ namespace cl9s
                     })) {
                 continue;
             }
-
-#ifdef CONSOLE_LOG
-            std::cout << "method: " << method << " path: " << path << std::endl;
-#endif
+            
             request_method req_method = str_to_request_method(method);
             response::res res = response::res{client_socket};
 
