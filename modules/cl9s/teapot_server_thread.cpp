@@ -11,8 +11,14 @@
 
 namespace cl9s
 {
-    const std::shared_ptr<std::thread>& teapot_server::handle_client_connection() {
+    const std::shared_ptr<std::thread>& teapot_server::handle_client_connection(const bool& silent_startup) {
         m_connection_thread = std::make_shared<std::thread>([this] { this->handle_client_thread(); });
+
+        if (!silent_startup) {
+            std::cout << "-----------------------------\n";
+            std::cout << "server running on port: " << m_port << '\n';
+            std::cout << "-----------------------------\n\n";
+        }
 
         return m_connection_thread;
     }
@@ -169,7 +175,7 @@ namespace cl9s
                     })) {
                 continue;
             }
-            
+
             request_method req_method = str_to_request_method(method);
             response::res res = response::res{client_socket};
 

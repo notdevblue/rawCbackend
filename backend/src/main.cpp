@@ -12,10 +12,6 @@ int main() {
         res.send("Install Gentoo and Remove Windows");
     });
 
-    std::cout << "-----------------------------\n";
-    std::cout << "server running on port: " << PORT << '\n';
-    std::cout << "-----------------------------\n\n";
-
     auto handle_thread = serv.handle_client_connection();
 
     return 0;

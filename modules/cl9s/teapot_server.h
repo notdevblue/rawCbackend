@@ -63,7 +63,7 @@ namespace cl9s
         // Summary:
         //  handles client connection
         //  and invoke route funciton
-        const std::shared_ptr<std::thread>& handle_client_connection();
+        const std::shared_ptr<std::thread>& handle_client_connection(const bool& silent_startup = false);
 
         // Summary:
         //  bind socket and listen for connection.
