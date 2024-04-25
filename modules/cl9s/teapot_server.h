@@ -1,7 +1,10 @@
 #pragma once
-#include <iostream>
 
 #include "teapot.h"
+#include "./response/response.h"
+#include "./request/request.h"
+
+#include <iostream>
 #include <memory>
 #include <thread>
 #include <string>
@@ -10,13 +13,9 @@
 
 namespace cl9s
 {
-    class teapot_server;
-    class request;
-    class response;
-
 #define SERVER_BUFFER_SIZE 4096
 
-    typedef std::function<void(request, response)> t_route_lambda;
+    typedef std::function<void(request::req, response::res)> t_route_lambda;
 
     class teapot_server : public teapot {
     public:
@@ -26,6 +25,7 @@ namespace cl9s
             m_port = port;
             m_bKeepAcceptConnection = true;
             m_route = std::map<request_method, std::map<std::string, t_route_lambda>>();
+            init_route_map();
         }
 
         virtual ~teapot_server() {
@@ -138,41 +138,5 @@ namespace cl9s
         std::map<request_method, std::map<std::string, t_route_lambda>> m_route;
         std::map<request_method, std::map<std::string, t_route_lambda>>::iterator m_route_it;
         std::map<std::string, t_route_lambda>::iterator m_route_path_it;
-    };
-
-    class request {
-    public:
-        request(const std::string& header) {}
-        request(const request& other) {}
-        ~request() {}
-
-    public:
-        const std::string& get_querystring() const;
-        const std::string& get_location() const;
-        const std::string& get_content() const;
-
-    private:
-        std::string m_querystring;
-        std::string m_location;
-        std::string m_content;
-    };
-
-    class response {
-    public:
-        response(sock& client_socket);
-        ~response();
-
-        const sock& get_client() const;
-
-        /// @brief sends response to client
-        /// @param response response text
-        /// @param size response text size
-        void send_response(const char* response, const size_t& size) const;
-
-    private:
-        
-
-    private:
-        sock& m_client_socket;
     };
 };

@@ -15,7 +15,9 @@ int main() {
             "\n"
             "Install Gentoo Always!\n";
 
-        res.send_response(result, sizeof(result));
+        // res.send_response(result, sizeof(result));
+
+        // res.send("payload", statuscode);
     });
 
     std::cout << "-----------------------------\n";
