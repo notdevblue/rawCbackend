@@ -102,11 +102,6 @@ namespace cl9s
         //  0 when connection is closed
         const bool is_client_alive(const sock& client_socket) const;
 
-
-        // Summary:
-        //  sends 404 response
-        void send_404_error(const sock& client_socket) const;
-
         std::unique_ptr<char[]> create_buffer(const int& size = SERVER_BUFFER_SIZE) const;
 
         virtual void stop(const int& how, const char* errmsg = "") override;

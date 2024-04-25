@@ -174,11 +174,12 @@ namespace cl9s
             std::cout << "method: " << method << " path: " << path << std::endl;
 #endif
             request_method req_method = str_to_request_method(method);
+            response::res res = response::res{client_socket};
 
             m_route_it = m_route.find(req_method);
             if (m_route_it == m_route.end()) {
                 free(path);
-                send_404_error(client_socket);
+                res.send("Not Found.", status::NOT_FOUND);
                 continue;
             }
 
@@ -187,11 +188,11 @@ namespace cl9s
             m_route_path_it = inner_map->find(path);
             if (m_route_path_it == inner_map->end()) {
                 free(path);
-                send_404_error(client_socket);
+                res.send("Not Found.", status::NOT_FOUND);
                 continue;
             }
 
-            inner_map->at(path)(request("hello"), response(client_socket));
+            inner_map->at(path)(request::req("hello"), std::move(res));
             free(path);
         } // while (m_bKeepAcceptConnection)
 

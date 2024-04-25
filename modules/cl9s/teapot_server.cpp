@@ -82,16 +82,4 @@ namespace cl9s
 
         m_route[method][href] = callback;
     }
-
-    void teapot_server::send_404_error(const sock& client_socket) const {
-        char res[] =
-            "HTTP/1.1 404 Not Found\n"
-            "Content-Length: 10\n"
-            "Content-Type: text/plain; charset=utf-8\n"
-            "\n"
-            "Not found.\n";
-
-        send(client_socket, res, sizeof(res));
-        teapot_server::close_connection(client_socket);
-    }
 }

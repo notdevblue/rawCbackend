@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h> // if compiling on windows, uninstall windows
+#include <cstdio>
 #include <cstdlib>
 #include <unordered_map>
 
