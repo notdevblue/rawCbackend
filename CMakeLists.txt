@@ -15,6 +15,7 @@ add_compile_definitions(CONSOLE_LOG)
 add_executable(
     ${outputName}
     ${CMAKE_SOURCE_DIR}/backend/src/main.cpp
+    ${modulePath}/cl9s/teapot.cpp
     ${modulePath}/cl9s/teapot_server.cpp
     ${modulePath}/cl9s/teapot_server_thread.cpp
     ${modulePath}/cl9s/request/request.cpp
