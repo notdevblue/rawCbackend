@@ -33,7 +33,7 @@ namespace cl9s
                 m_connection_thread.get()->join();
             }
         }
-        
+
     public:
 
         void route(const request_method& method, const std::string& href, const t_route_lambda& callback);
@@ -60,17 +60,6 @@ namespace cl9s
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
         const int accept_client(const sock& listening_socket, sock* client_socket OUT);
-
-        // Summary:
-        //  receives data from client
-        //
-        // Returns:
-        //  EXIT_SUCCESS on Success
-        //  EXIT_FAILIRE on Fail
-        const int receive(
-            const sock& client_sock,
-            char* buffer,
-            const size_t& buffer_size) const;
 
         // Summary:
         //  check connection whether it's alive or not

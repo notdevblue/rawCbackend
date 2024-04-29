@@ -48,25 +48,6 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    const int teapot_server::receive(
-        const sock& client_socket,
-        char* buffer,
-        const size_t& buffer_size) const
-    {
-        ssize_t received;
-
-        do {
-            received = read(client_socket, buffer, buffer_size);
-        } while(received > 0 && buffer[received] > 0);
-
-        if (received < 0) {
-            perror("teapot_server::receive() > read");
-            return EXIT_FAILURE;
-        }
-
-        return EXIT_SUCCESS;
-    }
-
     const bool teapot_server::is_client_alive(const sock& client_socket) const {
         return write(client_socket, NULL, 0) < 0;
     }

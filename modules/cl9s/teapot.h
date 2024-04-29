@@ -34,7 +34,10 @@ namespace cl9s
     class teapot
     {
     public:
-        teapot(const bool& prevent_socket_creation = false, const int& reuse_address = 1) : reuse_address(reuse_address){
+        teapot(
+            const bool& prevent_socket_creation = false,
+            const int& reuse_address = 1) : reuse_address(reuse_address)
+        {
 
             request_method_from_string = {
                 {"GET", request_method::GET},
@@ -62,9 +65,35 @@ namespace cl9s
         static const int send(
             const sock& client_socket,
             const char* response,
-            const size_t& response_size) {
+            const size_t& response_size)
+        {
             if (write(client_socket, response, response_size) < 0) {
                 perror("teapot_server::send() > write");
+                return EXIT_FAILURE;
+            }
+
+            return EXIT_SUCCESS;
+        }
+
+        // Summary:
+        //  receives data from client
+        //
+        // Returns:
+        //  EXIT_SUCCESS on Success
+        //  EXIT_FAILIRE on Fail
+        static const int receive(
+            const sock& client_socket,
+            char* buffer,
+            const size_t& buffer_size)
+        {
+            ssize_t received;
+
+            do {
+                received = read(client_socket, buffer, buffer_size);
+            } while (received > 0 && buffer[received] > 0);
+
+            if (received < 0) {
+                perror("teapot_server::receive() > read");
                 return EXIT_FAILURE;
             }
 
@@ -77,7 +106,10 @@ namespace cl9s
         // Returns:
         //  EXIT_SUCCESS on Success
         //  EXIT_FAILURE on Fail
-        static const int close_connection(const sock& client_socket, const int& how = SHUT_RDWR) {
+        static const int close_connection(
+            const sock& client_socket,
+            const int& how = SHUT_RDWR)
+        {
             if (shutdown(client_socket, how)) {
                 perror("teapot_server::close_connection() > shutdown");
                 return EXIT_FAILURE;
@@ -134,7 +166,13 @@ namespace cl9s
             }
 
             if (reuse_address == 1) {
-                if (setsockopt(*listening_socket, SOL_SOCKET, SO_REUSEADDR, &reuse_address, sizeof(int)) < 0) {
+                if (setsockopt(
+                        *listening_socket,
+                        SOL_SOCKET,
+                        SO_REUSEADDR,
+                        &reuse_address,
+                        sizeof(int)) < 0)
+                {
                     perror("teapot::create_socket() > setsockopt");
                     return EXIT_FAILURE;
                 }
