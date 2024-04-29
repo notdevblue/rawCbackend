@@ -12,7 +12,7 @@
 namespace cl9s
 {
     const std::shared_ptr<std::thread>& teapot_server::handle_client_connection(const bool& silent_startup) {
-        m_connection_thread = std::make_shared<std::thread>([this] { this->handle_client_thread(); });
+        m_connection_thread = std::make_shared<std::thread>([this] { this->accept_client_thread(); });
 
         if (!silent_startup) {
             std::cout << "-----------------------------\n";
@@ -122,7 +122,7 @@ namespace cl9s
         return callback(buffer, strlen(buffer));
     }
 
-    void teapot_server::handle_client_thread() {
+    void teapot_server::accept_client_thread() {
         sock listening_socket;
 
         while (m_bKeepAcceptConnection) {
@@ -143,6 +143,7 @@ namespace cl9s
                 continue;
             }
 
+#pragma region 여기 따로 빼야 함
             char method[7];
             char* path;
             // receive header
@@ -197,6 +198,7 @@ namespace cl9s
 
             inner_map->at(path)(request::req("hello"), std::move(res));
             free(path);
+#pragma endregion // 여기 따로 빼야 함
 
             // FIXME: Keep-Alive connection problem
             // n초 이상 request 가 없으면 소켓을 닫아야 함
@@ -204,5 +206,12 @@ namespace cl9s
         } // while (m_bKeepAcceptConnection)
 
         printf("\n### handle client thread shutdown... ###\n\n");
+    }
+
+    void teapot_server::handle_client_thread() {
+        throw "Not Implemented";
+
+        // TODO: receive request
+        // handle keep-alive connection
     }
 }

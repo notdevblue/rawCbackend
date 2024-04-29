@@ -74,6 +74,7 @@ namespace cl9s
         virtual void stop(const int& how, const char* errmsg = "") override;
 
     protected:
+        void accept_client_thread();
         void handle_client_thread();
 
         sock handle_create();
