@@ -197,6 +197,10 @@ namespace cl9s
 
             inner_map->at(path)(request::req("hello"), std::move(res));
             free(path);
+
+            // FIXME: Keep-Alive connection problem
+            // n초 이상 request 가 없으면 소켓을 닫아야 함
+            // 바로 close 하게 되면, 클라이언트가 예전에 열려있던 소켓으로 요청 보냈을 시에 오류 남
         } // while (m_bKeepAcceptConnection)
 
         printf("\n### handle client thread shutdown... ###\n\n");
