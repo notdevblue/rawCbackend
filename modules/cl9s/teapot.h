@@ -51,6 +51,40 @@ namespace cl9s
 
         virtual ~teapot() {
         }
+    
+    public:
+        // Summary:
+        //  send data to client
+        //
+        // Returns:
+        //  EXIT_SUCCESS on Success
+        //  EXIT_FAILURE on Fail
+        static const int send(
+            const sock& client_socket,
+            const char* response,
+            const size_t& response_size) {
+            if (write(client_socket, response, response_size) < 0) {
+                perror("teapot_server::send() > write");
+                return EXIT_FAILURE;
+            }
+
+            return EXIT_SUCCESS;
+        }
+
+        // Summary:
+        //  closes connection with client
+        //
+        // Returns:
+        //  EXIT_SUCCESS on Success
+        //  EXIT_FAILURE on Fail
+        static const int close_connection(const sock& client_socket, const int& how = SHUT_RDWR) {
+            if (shutdown(client_socket, how)) {
+                perror("teapot_server::close_connection() > shutdown");
+                return EXIT_FAILURE;
+            }
+
+            return EXIT_SUCCESS;
+        }
 
     public:
         // Summary:

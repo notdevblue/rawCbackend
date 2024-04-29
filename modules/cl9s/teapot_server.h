@@ -33,29 +33,7 @@ namespace cl9s
                 m_connection_thread.get()->join();
             }
         }
-
-    public:
-        // Summary:
-        //  send data to client
-        //
-        // Returns:
-        //  EXIT_SUCCESS on Success
-        //  EXIT_FAILURE on Fail
-        static const int send(
-            const sock& client_socket,
-            const char* response,
-            const size_t& response_size);
-
-        // Summary:
-        //  closes connection with client
-        //
-        // Returns:
-        //  EXIT_SUCCESS on Success
-        //  EXIT_FAILURE on Fail
-        static const int close_connection(
-            const sock& client_socket,
-            const int& how = SHUT_RDWR);
-
+        
     public:
 
         void route(const request_method& method, const std::string& href, const t_route_lambda& callback);
