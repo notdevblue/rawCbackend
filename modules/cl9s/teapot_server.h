@@ -77,9 +77,9 @@ namespace cl9s
         void handle_client_thread();
 
         sock handle_create();
-        const bool handle_listen(const sock& socket);
+        const bool handle_listen(sock& socket IN);
         const bool handle_accept(const sock& listening_socket, sock& client_socket OUT);
-        const bool handle_receive_header(const sock& client_socket, std::function<const bool(const char* buffer, const int& length)> callback);
+        const bool handle_receive_header(sock& client_socket IN, std::function<const bool(const char* buffer, const int& length)> callback);
     
     private:
         inline void init_route_map() {

@@ -12,7 +12,7 @@ namespace cl9s::response
     }
 
     res::~res() {
-        cl9s::teapot_server::close_connection(m_client_socket);
+        cl9s::teapot::close_socket(m_client_socket);
     }
 
     const sock& res::get_client() const {

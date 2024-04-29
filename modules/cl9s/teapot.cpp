@@ -55,7 +55,6 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-// public member functions
     const int teapot::close_socket(sock& socket IN, const int& how) {
         if (socket == 0) {
             return EXIT_SUCCESS;
@@ -71,6 +70,7 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
+// public member functions
     const request_method& teapot::str_to_request_method(char* method) {
         return request_method_from_string[method];
     }

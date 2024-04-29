@@ -53,7 +53,7 @@ namespace cl9s
         return socket;
     }
 
-    const bool teapot_server::handle_listen(const sock& socket) {
+    const bool teapot_server::handle_listen(sock& socket IN) {
         static unsigned char listening_failsafe = 0;
 
         if (listen_connection(socket) < 0) {
@@ -93,7 +93,7 @@ namespace cl9s
     }
 
     const bool teapot_server::handle_receive_header(
-        const sock& client_socket,
+        sock& client_socket IN,
         std::function<const bool(const char* buffer, const int& len)> callback)
     {
         static unsigned char receive_header_failsafe = 0;
@@ -103,7 +103,7 @@ namespace cl9s
 
 
         if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) < 0) {
-            close_connection(client_socket);
+            close_socket(client_socket);
             ++receive_header_failsafe;
 
             if (receive_header_failsafe >= DEAFULT_FAILSAFE_COUNT) {

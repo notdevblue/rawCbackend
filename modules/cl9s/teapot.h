@@ -54,22 +54,12 @@ namespace cl9s
             char* buffer,
             const size_t& buffer_size);
 
-        // Summary:
-        //  closes connection with client
-        //
-        // Returns:
-        //  EXIT_SUCCESS on Success
-        //  EXIT_FAILURE on Fail
-        static const int close_connection(
-            const sock& client_socket,
-            const int& how = SHUT_RDWR) = delete; // FIXME: Duplicate function. use teapot::close_socket
-
-    public:
         /// @brief Closes socket.
         /// @param socket socket to close
         /// @return EXIT_SUCCESS on Success, EXIT_FAILURE on Fail
-        const int close_socket(sock& socket IN, const int& how = SHUT_RDWR);
-
+        static const int close_socket(sock& socket IN, const int& how = SHUT_RDWR);
+        
+    public:
         /// @brief Changes GET, POST, etc to request_method::GET, request_method::POST, etc.
         /// @param method request method
         /// @return method as request_method enum class
