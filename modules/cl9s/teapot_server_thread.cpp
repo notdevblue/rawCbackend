@@ -36,60 +36,32 @@ namespace cl9s
     }
 
     sock teapot_server::handle_create() {
-        static unsigned char creating_failsafe = 0;
         sock socket;
-
         if (create_socket(&socket) < 0) {
             close(socket);
-            ++creating_failsafe;
-
-            if (creating_failsafe >= DEAFULT_FAILSAFE_COUNT) {
-                stop(STOP_EXCEPTION, "Creating failsafe");
-            }
 
             return 0;
         }
 
-        creating_failsafe = 0;
         return socket;
     }
 
     const bool teapot_server::handle_listen(sock& socket IN) {
-        static unsigned char listening_failsafe = 0;
-
         if (listen_connection(socket) != 0) {
             close(socket);
-            ++listening_failsafe;
-
-            if (listening_failsafe >= DEAFULT_FAILSAFE_COUNT) {
-                stop(STOP_EXCEPTION, "Listening failsafe");
-            }
-
             return false;
         }
-
-        listening_failsafe = 0;
 
         return true;
     }
 
     const bool teapot_server::handle_accept(const sock& listening_socket, sock& client_socket OUT) {
-        static unsigned char accept_failsafe = 0;
-
         if (accept_client(listening_socket, &client_socket) != 0) {
             close(listening_socket);
-            ++accept_failsafe;
-
-            if (accept_failsafe >= DEAFULT_FAILSAFE_COUNT) {
-                stop(STOP_EXCEPTION, "Accept failsafe");
-            }
-
             return false;
         }
 
-        accept_failsafe = 0;
         close(listening_socket);
-
         return true;
     }
 
@@ -104,7 +76,7 @@ namespace cl9s
         if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != 0) {
             close_socket(client_socket);
 #if CONSOLE_LOG
-            std::cout << "receive failed or timed out." << std::endl;
+            printf("handle_receive_header: receive failed or socket closed, see upper error if exists.\n\n");
 #endif
             return false;
         }

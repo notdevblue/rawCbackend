@@ -51,10 +51,13 @@ namespace cl9s
         do {
             received = read(client_socket, buffer, buffer_size);
 #if CONSOLE_LOG
-            std::cout << "len: " << received << std::endl;
-            std::cout << "buf: "<< buffer << std::endl;
+            printf("len: %lu\nbuf: %s\n", received, buffer);
 #endif
         } while (received > 0 && buffer[received] > 0);
+
+        if (received == 0) {
+            throw "Not Implemented.";
+        }
 
         if (received < 0) {
             perror("teapot_server::receive() > read");
