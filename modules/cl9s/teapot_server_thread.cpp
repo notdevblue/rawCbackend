@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "teapot_server.h"
+#include "../strdup_raii/strdup_raii.h"
 
 #define DEAFULT_FAILSAFE_COUNT 50
 
@@ -143,73 +144,70 @@ namespace cl9s
                 continue;
             }
 
-#pragma region 여기 따로 빼야 함
-            char method[7];
-            char* path;
-            // receive header
-            if (
-                !handle_receive_header(
-                    client_socket,
-                    [&method, &path](const char* buffer, const int& len) -> const bool {
-                        char* saveptr1;
-                        char* token;
-                        char* copiedstr = strdup(buffer);
-
-                        token = strtok_r(copiedstr, "\n", &saveptr1);
-                        if (token == NULL) {
-                            free(copiedstr);
-                            return false;
-                        }
-
-                        saveptr1 = nullptr;
-
-                        strcpy(method, strtok_r(token, " ", &saveptr1));
-                        path = strdup(strtok_r(NULL, " ", &saveptr1));
-
-                        if (method == NULL || path == NULL) {
-                            free(copiedstr);
-                            return false;
-                        }
-
-                        free(copiedstr);
-                        return true;
-                    })) {
-                continue;
-            }
-
-            request_method req_method = str_to_request_method(method);
-            response::res res = response::res{client_socket};
-
-            m_route_it = m_route.find(req_method);
-            if (m_route_it == m_route.end()) {
-                free(path);
-                res.send("Not Found.", status::NOT_FOUND);
-                continue;
-            }
-
-            const auto inner_map = &m_route[req_method];
-
-            m_route_path_it = inner_map->find(path);
-            if (m_route_path_it == inner_map->end()) {
-                free(path);
-                res.send("Not Found.", status::NOT_FOUND);
-                continue;
-            }
-
-            inner_map->at(path)(request::req("hello"), std::move(res));
-            free(path);
-#pragma endregion // 여기 따로 빼야 함
 
             // FIXME: Keep-Alive connection problem
             // n초 이상 request 가 없으면 소켓을 닫아야 함
             // 바로 close 하게 되면, 클라이언트가 예전에 열려있던 소켓으로 요청 보냈을 시에 오류 남
+            std::thread([this, &client_socket] {
+                this->handle_client_thread(client_socket);
+            }).detach(); // 스레드가 안 사라지고 남는 경우가 생김
+
+            // sleep(1);
         } // while (m_bKeepAcceptConnection)
 
-        printf("\n### handle client thread shutdown... ###\n\n");
+        printf("\n### accept client thread shutdown... ###\n\n");
     }
 
-    void teapot_server::handle_client_thread() {
-        throw "Not Implemented";
+    void teapot_server::handle_client_thread(sock& client_socket IN) {
+        char method[7];
+        strdup_raii path;
+
+        // receive header
+        if (
+            !handle_receive_header(
+                client_socket,
+                [&method, &path](const char* buffer, const int& len) -> const bool {
+                    char* saveptr1;
+                    char* token;
+                    strdup_raii copiedstr{buffer};
+
+                    token = strtok_r(copiedstr.get(), "\n", &saveptr1);
+                    if (token == NULL) {
+                        return false;
+                    }
+
+                    saveptr1 = nullptr;
+
+                    strcpy(method, strtok_r(token, " ", &saveptr1));
+                    path.assign(strtok_r(NULL, " ", &saveptr1));
+
+                    if (method == NULL || path.get() == NULL) {
+                        return false;
+                    }
+
+                    return true;
+                })) {
+            return; // header invalid
+        }
+
+        request_method req_method = str_to_request_method(method);
+        response::res res = response::res{client_socket};
+
+        m_route_it = m_route.find(req_method);
+        if (m_route_it == m_route.end()) {
+            res.send("Not Found.", status::NOT_FOUND);
+            return;
+        }
+
+        const auto inner_map = &m_route[req_method];
+
+        m_route_path_it = inner_map->find(path.get());
+        if (m_route_path_it == inner_map->end()) {
+            res.send("Not Found.", status::NOT_FOUND);
+            return;
+        }
+
+        inner_map->at(path.get())(request::req("hello"), std::move(res));
 
         // TODO: receive request
         // handle keep-alive connection

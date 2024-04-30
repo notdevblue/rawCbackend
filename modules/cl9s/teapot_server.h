@@ -25,7 +25,12 @@ namespace cl9s
             m_port = port;
             m_bKeepAcceptConnection = true;
             m_route = std::map<request_method, std::map<std::string, t_route_lambda>>();
-            init_route_map();
+
+            for (request_method req_method = (request_method)0;
+                req_method < request_method::END_OF_ENUM;
+                req_method = (request_method)((int)req_method + 1)) {
+                m_route[req_method] = std::map<std::string, t_route_lambda>();
+            }
         }
 
         virtual ~teapot_server() {
@@ -75,22 +80,12 @@ namespace cl9s
 
     protected:
         void accept_client_thread();
-        void handle_client_thread();
+        void handle_client_thread(sock& client_socket IN);
 
         sock handle_create();
         const bool handle_listen(sock& socket IN);
         const bool handle_accept(const sock& listening_socket, sock& client_socket OUT);
         const bool handle_receive_header(sock& client_socket IN, std::function<const bool(const char* buffer, const int& length)> callback);
-    
-    private:
-        inline void init_route_map() {
-            for (request_method req_method = (request_method)0;
-                req_method < request_method::END_OF_ENUM;
-                req_method = (request_method)((int)req_method + 1))
-            {
-                m_route[req_method] = std::map<std::string, t_route_lambda>();
-            }
-        }
 
     private:
         uint16_t m_port;
