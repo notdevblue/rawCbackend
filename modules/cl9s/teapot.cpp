@@ -1,5 +1,9 @@
 #include "teapot.h"
 
+#if CONSOLE_LOG
+#include <iostream>
+#endif
+
 namespace cl9s
 {
     teapot::teapot(
@@ -28,6 +32,7 @@ namespace cl9s
         const char* response,
         const size_t& response_size)
     {
+        // handle broken pipe exception
         if (write(client_socket, response, response_size) < 0) {
             perror("teapot_server::send() > write");
             return EXIT_FAILURE;
@@ -45,6 +50,10 @@ namespace cl9s
 
         do {
             received = read(client_socket, buffer, buffer_size);
+#if CONSOLE_LOG
+            std::cout << "len: " << received << std::endl;
+            std::cout << "buf: "<< buffer << std::endl;
+#endif
         } while (received > 0 && buffer[received] > 0);
 
         if (received < 0) {
@@ -95,7 +104,7 @@ namespace cl9s
                     SO_REUSEADDR,
                     &reuse_address,
                     sizeof(int)) < 0) {
-                perror("teapot::create_socket() > setsockopt");
+                perror("teapot::create_socket() > setsockopt (reuseaddr)");
                 return EXIT_FAILURE;
             }
         }

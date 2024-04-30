@@ -45,6 +45,21 @@ namespace cl9s
             return EXIT_FAILURE;
         }
 
+        timeval tv;
+        tv.tv_sec = 5;
+        tv.tv_usec = 0;
+
+        if (setsockopt(
+                *client_socket,
+                SOL_SOCKET,
+                SO_RCVTIMEO,
+                (const char*)&tv,
+                sizeof(tv)) < 0) {
+            perror("teapot_server::accept_client() > setsockopt (rcvtimeo)");
+            close(*client_socket);
+            return EXIT_FAILURE;
+        }
+
         return EXIT_SUCCESS;
     }
 

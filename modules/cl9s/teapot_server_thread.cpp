@@ -57,7 +57,7 @@ namespace cl9s
     const bool teapot_server::handle_listen(sock& socket IN) {
         static unsigned char listening_failsafe = 0;
 
-        if (listen_connection(socket) < 0) {
+        if (listen_connection(socket) != 0) {
             close(socket);
             ++listening_failsafe;
 
@@ -76,7 +76,7 @@ namespace cl9s
     const bool teapot_server::handle_accept(const sock& listening_socket, sock& client_socket OUT) {
         static unsigned char accept_failsafe = 0;
 
-        if (accept_client(listening_socket, &client_socket) < 0) {
+        if (accept_client(listening_socket, &client_socket) != 0) {
             close(listening_socket);
             ++accept_failsafe;
 
@@ -97,28 +97,17 @@ namespace cl9s
         sock& client_socket IN,
         std::function<const bool(const char* buffer, const int& len)> callback)
     {
-        static unsigned char receive_header_failsafe = 0;
-
         std::unique_ptr<char[]> unique_buffer = create_buffer(); // FIXME: use shared buffer instead
         char* buffer = unique_buffer.get();
 
 
-        if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) < 0) {
+        if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != 0) {
             close_socket(client_socket);
-            ++receive_header_failsafe;
-
-            if (receive_header_failsafe >= DEAFULT_FAILSAFE_COUNT) {
-                stop(STOP_EXCEPTION, "Receive header failsafe");
-            }
-
+#if CONSOLE_LOG
+            std::cout << "receive failed or timed out." << std::endl;
+#endif
             return false;
         }
-
-#ifdef CONSOLE_LOG
-        std::cout << "Received: \n" << buffer << std::endl;
-#endif
-
-        receive_header_failsafe = 0;
 
         return callback(buffer, strlen(buffer));
     }
@@ -144,15 +133,9 @@ namespace cl9s
                 continue;
             }
 
-
-            // FIXME: Keep-Alive connection problem
-            // n초 이상 request 가 없으면 소켓을 닫아야 함
-            // 바로 close 하게 되면, 클라이언트가 예전에 열려있던 소켓으로 요청 보냈을 시에 오류 남
             std::thread([this, &client_socket] {
                 this->handle_client_thread(client_socket);
-            }).detach(); // 스레드가 안 사라지고 남는 경우가 생김
-
-            // sleep(1);
+            }).detach();
         } // while (m_bKeepAcceptConnection)
 
         printf("\n### accept client thread shutdown... ###\n\n");
@@ -162,54 +145,52 @@ namespace cl9s
         char method[7];
         strdup_raii path;
 
-        // receive header
-        if (
-            !handle_receive_header(
-                client_socket,
-                [&method, &path](const char* buffer, const int& len) -> const bool {
-                    char* saveptr1;
-                    char* token;
-                    strdup_raii copiedstr{buffer};
+        while (true) {
+            if (
+                !handle_receive_header(
+                    client_socket,
+                    [&method, &path](const char* buffer, const int& len) -> const bool {
+                        char* saveptr1;
+                        char* token;
+                        strdup_raii copiedstr{buffer};
 
-                    token = strtok_r(copiedstr.get(), "\n", &saveptr1);
-                    if (token == NULL) {
-                        return false;
-                    }
+                        token = strtok_r(copiedstr.get(), "\n", &saveptr1);
+                        if (token == NULL) {
+                            return false;
+                        }
 
-                    saveptr1 = nullptr;
+                        saveptr1 = nullptr;
 
-                    strcpy(method, strtok_r(token, " ", &saveptr1));
-                    path.assign(strtok_r(NULL, " ", &saveptr1));
+                        strcpy(method, strtok_r(token, " ", &saveptr1));
+                        path.assign(strtok_r(NULL, " ", &saveptr1));
 
-                    if (method == NULL || path.get() == NULL) {
-                        return false;
-                    }
+                        if (method == NULL || path.get() == NULL) {
+                            return false;
+                        }
 
-                    return true;
-                })) {
-            return; // header invalid
+                        return true;
+                    })) {
+                break; // header invalid or timed out
+            }
+
+            request_method req_method = str_to_request_method(method);
+            response::res res = response::res{client_socket};
+
+            m_route_it = m_route.find(req_method);
+            if (m_route_it == m_route.end()) {
+                res.send("Not Found.", status::NOT_FOUND);
+                continue;
+            }
+
+            const auto inner_map = &m_route[req_method];
+
+            m_route_path_it = inner_map->find(path.get());
+            if (m_route_path_it == inner_map->end()) {
+                res.send("Not Found.", status::NOT_FOUND);
+                continue;
+            }
+
+            inner_map->at(path.get())(request::req("hello"), std::move(res));
         }
-
-        request_method req_method = str_to_request_method(method);
-        response::res res = response::res{client_socket};
-
-        m_route_it = m_route.find(req_method);
-        if (m_route_it == m_route.end()) {
-            res.send("Not Found.", status::NOT_FOUND);
-            return;
-        }
-
-        const auto inner_map = &m_route[req_method];
-
-        m_route_path_it = inner_map->find(path.get());
-        if (m_route_path_it == inner_map->end()) {
-            res.send("Not Found.", status::NOT_FOUND);
-            return;
-        }
-
-        inner_map->at(path.get())(request::req("hello"), std::move(res));
-
-        // TODO: receive request
-        // handle keep-alive connection
     }
 }
