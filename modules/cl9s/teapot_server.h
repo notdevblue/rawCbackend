@@ -72,7 +72,7 @@ namespace cl9s
         // Returns:
         //  1 when connection is alive
         //  0 when connection is closed
-        const bool is_client_alive(const sock& client_socket) const;
+        const bool is_client_alive(const sock& client_socket) const = delete;
 
         std::unique_ptr<char[]> create_buffer(const int& size = SERVER_BUFFER_SIZE) const;
 
