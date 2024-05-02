@@ -66,7 +66,7 @@ namespace cl9s
     }
 
     const bool teapot_server::handle_receive_header(
-        sock& client_socket IN,
+        sock& client_socket IN OUT,
         std::function<const bool(const char* buffer, const int& len)> callback)
     {
         std::unique_ptr<char[]> unique_buffer = create_buffer(); // FIXME: use shared buffer instead
@@ -75,9 +75,8 @@ namespace cl9s
 
         if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != 0) {
             close_socket(client_socket);
-#if CONSOLE_LOG
-            printf("handle_receive_header: receive failed or socket closed, see upper error if exists.\n\n");
-#endif
+            client_socket = 0;
+
             return false;
         }
 
@@ -114,10 +113,11 @@ namespace cl9s
     }
 
     void teapot_server::handle_client_thread(sock& client_socket IN) {
-        char method[7];
-        strdup_raii path;
 
         while (true) {
+            char method[7];
+            strdup_raii path;
+            
             if (
                 !handle_receive_header(
                     client_socket,
@@ -142,7 +142,7 @@ namespace cl9s
 
                         return true;
                     })) {
-                break; // header invalid or timed out
+                break; // close
             }
 
             request_method req_method = str_to_request_method(method);
@@ -163,6 +163,10 @@ namespace cl9s
             }
 
             inner_map->at(path.get())(request::req("hello"), std::move(res));
+        }
+
+        if (client_socket != 0) {
+            close_socket(client_socket);
         }
     }
 }

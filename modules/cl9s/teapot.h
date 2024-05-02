@@ -48,7 +48,7 @@ namespace cl9s
 
         /// @brief Receives data from client
         /// @param client_socket socket to receive data from
-        /// @return EXIT_SUCCESS on Success, EXIT_FAILURE on Fail
+        /// @return 0 on Success, 1 on Close
         static const int receive(
             const sock& client_socket,
             char* buffer,

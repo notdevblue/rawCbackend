@@ -56,7 +56,7 @@ namespace cl9s
         } while (received > 0 && buffer[received] > 0);
 
         if (received == 0) {
-            throw "Not Implemented.";
+            return 1; // close, same as EXIT_FAILURE
         }
 
         if (received < 0) {
