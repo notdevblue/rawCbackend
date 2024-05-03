@@ -74,6 +74,7 @@ namespace cl9s
 
 
         if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != 0) {
+            // remote closed connection
             close_socket(client_socket);
             client_socket = 0;
 

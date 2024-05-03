@@ -44,7 +44,7 @@ namespace cl9s
             perror("teapot_server::accept_client() > accept");
             return EXIT_FAILURE;
         }
-
+        
         timeval tv;
         tv.tv_sec = 5;
         tv.tv_usec = 0;
