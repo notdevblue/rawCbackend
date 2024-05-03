@@ -63,10 +63,6 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    // const bool teapot_server::is_client_alive(const sock& client_socket) const {
-    //     return write(client_socket, NULL, 0) < 0;
-    // }
-
     std::unique_ptr<char[]> teapot_server::create_buffer(const int& size) const {
         return std::make_unique<char[]>(size);
     }

@@ -11,7 +11,7 @@ project(
 set(outputName teapot.out)
 set(modulePath ${CMAKE_SOURCE_DIR}/modules)
 
-add_compile_definitions(CONSOLE_LOG)
+# add_compile_definitions(CONSOLE_LOG)
 add_executable(
     ${outputName}
     ${CMAKE_SOURCE_DIR}/backend/src/main.cpp

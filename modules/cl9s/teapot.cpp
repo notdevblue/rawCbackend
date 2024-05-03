@@ -50,8 +50,9 @@ namespace cl9s
 
         do {
             received = read(client_socket, buffer, buffer_size);
+            printf("received: %ld\n", received);
 #if CONSOLE_LOG
-            printf("len: %lu\nbuf: %s\n", received, buffer);
+            printf("len: %ld\nbuf: %s\n", received, buffer);
 #endif
         } while (received > 0 && buffer[received] > 0);
 
