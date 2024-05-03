@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <unordered_map>
+#include <mutex>
 
 #define IN
 #define OUT
@@ -79,6 +80,7 @@ namespace cl9s
 
     private:
         std::unordered_map<const char*, request_method> request_method_from_string;
+        std::mutex recv_mutex;
 
     private:
         int reuse_address;
