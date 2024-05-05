@@ -18,6 +18,12 @@ int main() {
         serv.stop(STOP_SCHEDULED);
     });
 
+    serv.route(cl9s::request_method::GET, "/clear", [](auto req, auto res) {
+        res.send("Ok");
+
+        system("clear");
+    });
+
     auto handle_thread = serv.handle_client_connection();
 
     return 0;

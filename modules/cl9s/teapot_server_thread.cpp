@@ -166,10 +166,7 @@ namespace cl9s
             inner_map->at(path.get())(request::req("hello"), std::move(res));
         }
 
-        
-        if (client_socket != 0) {
-            printf("Client %d die\n", client_socket);
-            close_socket(client_socket);
-        }
+        printf("Client %d die\n", client_socket);
+        close_socket(client_socket);
     }
 }
