@@ -12,12 +12,6 @@ int main() {
         res.send("Install Gentoo and Remove Windows");
     });
 
-    serv.route(cl9s::request_method::GET, "/stop", [&serv](auto req, auto res) {
-        res.send("Server stopping.");
-
-        serv.stop(STOP_SCHEDULED);
-    });
-
     serv.route(cl9s::request_method::GET, "/clear", [](auto req, auto res) {
         res.send("Ok");
 
