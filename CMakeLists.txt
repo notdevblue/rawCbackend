@@ -12,6 +12,9 @@ set(outputName teapot.out)
 set(modulePath ${CMAKE_SOURCE_DIR}/modules)
 
 add_compile_definitions(CONSOLE_LOG)
+add_compile_definitions(PROJECT_ROOT="${CMAKE_SOURCE_DIR}")
+add_compile_definitions(PUBLICS="${CMAKE_SOURCE_DIR}/public")
+
 add_executable(
     ${outputName}
     ${CMAKE_SOURCE_DIR}/backend/src/main.cpp
@@ -20,6 +23,7 @@ add_executable(
     ${modulePath}/cl9s/teapot_server_thread.cpp
     ${modulePath}/cl9s/request/request.cpp
     ${modulePath}/cl9s/response/response.cpp
+    ${modulePath}/file/filereader.cpp
 )
 
 target_include_directories(${outputName} PUBLIC ${CMAKE_SOURCE_DIR}/modules)
