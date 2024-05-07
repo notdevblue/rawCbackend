@@ -5,12 +5,11 @@
 
 file::file(const char* path) {
     m_data = nullptr;
-    m_path = (char*)malloc(sizeof(path));
-    strcpy(m_path, path);
+    m_path = std::string(path);
 }
 
 const char* file::read() {
-    if (m_data != nullptr) {
+    if (m_data != nullptr) {        
         free(m_data);
     }
 
@@ -25,6 +24,7 @@ const char* file::read() {
     fseek(m_fp, 0, SEEK_SET);
 
     m_data = (char*)malloc(sizeof(char) * (size + 1));
+    memset(m_data, 0, sizeof(char) * (size + 1));
 
     fread_unlocked(m_data, sizeof(char), size, m_fp);
     fclose(m_fp);
@@ -32,10 +32,12 @@ const char* file::read() {
     return m_data;
 }
 
+const char* file::extension(){
+    return m_path.substr(m_path.find_last_of('.')).c_str();
+}
+
 file::~file() {
     if (m_data != nullptr) {
         free(m_data);
     }
-
-    free(m_path);
 }

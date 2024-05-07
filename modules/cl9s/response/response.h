@@ -14,6 +14,7 @@ namespace cl9s::response
 
         const sock& get_client() const;
 
+        void view(const std::string& path, const status& code = status::OK) const;
         void send(const std::string& data, const status& code = status::OK) const;
 
     private:

@@ -7,10 +7,11 @@ class file {
 public:
     file(const char* path);
     const char* read();
+    const char* extension();
     ~file();
 
 private:
-    char* m_path;
+    std::string m_path;
     FILE* m_fp;
     char* m_data;
 };

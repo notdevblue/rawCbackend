@@ -12,10 +12,8 @@ int main() {
         res.send("Install Gentoo and Remove Windows");
     });
 
-    serv.route(cl9s::request_method::GET, "/clear", [](auto req, auto res) {
-        res.send("Ok");
-
-        system("clear");
+    serv.route(cl9s::request_method::GET, "/index", [](auto req, auto res) {
+        res.view("/index.html");
     });
 
     auto handle_thread = serv.handle_client_connection();
