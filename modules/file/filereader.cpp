@@ -26,7 +26,7 @@ const char* file::read() {
 
     m_data = (char*)malloc(sizeof(char) * (size + 1));
 
-    fread_unlocked(m_data, size, size, m_fp);
+    fread_unlocked(m_data, sizeof(char), size, m_fp);
     fclose(m_fp);
 
     return m_data;
