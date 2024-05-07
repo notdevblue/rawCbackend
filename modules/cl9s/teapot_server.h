@@ -80,7 +80,7 @@ namespace cl9s
 
     protected:
         void accept_client_thread();
-        void handle_client_thread(sock& client_socket IN);
+        void handle_client_thread(sock client_socket);
 
         sock handle_create();
         const bool handle_listen(sock& socket IN);

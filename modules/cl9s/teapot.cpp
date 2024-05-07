@@ -50,9 +50,8 @@ namespace cl9s
 
         do {
             received = read(client_socket, buffer, buffer_size);
-            printf("received: %ld\n", received);
 #if CONSOLE_LOG
-            printf("len: %ld\nbuf: %s\n", received, buffer);
+            printf("len: %ld\nRequest:\n%s\n", received, buffer);
 #endif
         } while (received > 0 && buffer[received] > 0);
 
@@ -77,8 +76,6 @@ namespace cl9s
             perror("teapot::close_socket() > shutdown");
             return EXIT_FAILURE;
         }
-
-        socket = 0;
 
         return EXIT_SUCCESS;
     }

@@ -72,7 +72,6 @@ namespace cl9s
         std::unique_ptr<char[]> unique_buffer = create_buffer(); // FIXME: use shared buffer instead
         char* buffer = unique_buffer.get();
 
-        printf("Waiting for data.. (client: %d)\n", client_socket);
         if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != 0) {
             // remote closed connection
             return false;
@@ -110,10 +109,7 @@ namespace cl9s
         printf("\n### accept client thread shutdown... ###\n\n");
     }
 
-    void teapot_server::handle_client_thread(sock& client_socket IN) {
-
-        printf("\nNew thread, Socket: %d\n", client_socket);
-
+    void teapot_server::handle_client_thread(sock client_socket) {
         while (true) {
             char method[7];
             strdup_raii path;
@@ -135,7 +131,6 @@ namespace cl9s
 
                         strcpy(method, strtok_r(token, " ", &saveptr1));
                         path.assign(strtok_r(NULL, " ", &saveptr1));
-                        printf("PATH: %s\n", path.get());
 
                         if (method == NULL || path.get() == NULL) {
                             return false;
@@ -166,7 +161,6 @@ namespace cl9s
             inner_map->at(path.get())(request::req("hello"), std::move(res));
         }
 
-        printf("Client %d die\n", client_socket);
         close_socket(client_socket);
     }
 }
