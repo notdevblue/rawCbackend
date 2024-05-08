@@ -14,4 +14,5 @@ namespace cl9s::content
     const std::string& text::get_type() const {
         return m_type + "/" + m_subtype;
     }
+    
 }
