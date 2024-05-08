@@ -5,6 +5,7 @@
 
 class file {
 public:
+    file();
     file(const char* path);
     const char* read();
     const char* extension();

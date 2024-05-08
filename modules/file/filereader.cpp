@@ -3,6 +3,9 @@
 #include <string>
 #include <string.h>
 
+file::file() {
+}
+
 file::file(const char* path) {
     m_data = nullptr;
     m_path = std::string(path);
