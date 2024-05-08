@@ -32,8 +32,13 @@ namespace cl9s
         const char* response,
         const size_t& response_size)
     {
-        // FIXME: handle broken pipe exception
-        if (write(client_socket, response, response_size) < 0) {
+        ssize_t res;
+
+        res = write(client_socket, response, response_size);
+        // pthread_cleanup_push();
+        // handle cancellation point with upper function
+
+        if (res < 0) {
             perror("teapot_server::send() > write");
             return EXIT_FAILURE;
         }

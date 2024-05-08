@@ -20,6 +20,9 @@ public:
     }
 
     void assign(const char* _source) {
+        if (_source == nullptr) {
+            throw "Null pointer exception";
+        }
         str = strdup(_source);
     }
 

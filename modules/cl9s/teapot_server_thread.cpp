@@ -129,8 +129,12 @@ namespace cl9s
 
                         saveptr1 = nullptr;
 
-                        strcpy(method, strtok_r(token, " ", &saveptr1));
-                        path.assign(strtok_r(NULL, " ", &saveptr1));
+                        try {
+                            strcpy(method, strtok_r(token, " ", &saveptr1));
+                            path.assign(strtok_r(NULL, " ", &saveptr1));
+                        } catch (...)  {
+                            return false;
+                        }
 
                         if (method == NULL || path.get() == NULL) {
                             return false;
