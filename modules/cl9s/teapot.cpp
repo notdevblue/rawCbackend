@@ -1,4 +1,5 @@
 #include "teapot.h"
+#include "signal.h"
 
 #if CONSOLE_LOG
 #include <iostream>
@@ -6,6 +7,9 @@
 
 namespace cl9s
 {
+    void sigpipe_handler(int sigtype) {
+    }
+
     teapot::teapot(
         const bool& prevent_socket_creation,
         const int& reuse_address) : reuse_address(reuse_address)
@@ -20,6 +24,8 @@ namespace cl9s
             {"OPTIONS", request_method::OPTIONS},
             {"TRACE", request_method::TRACE},
             {"PATCH", request_method::PATCH}};
+
+        signal(SIGPIPE, sigpipe_handler);
     }
 
     teapot::~teapot() 
@@ -34,9 +40,7 @@ namespace cl9s
     {
         ssize_t res;
 
-        res = write(client_socket, response, response_size);
-        // pthread_cleanup_push();
-        // handle cancellation point with upper function
+        res = ::send(client_socket, response, response_size, 0);
 
         if (res < 0) {
             perror("teapot_server::send() > write");
