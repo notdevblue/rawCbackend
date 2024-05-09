@@ -82,6 +82,7 @@ namespace cl9s
         }
 
         if (shutdown(socket, how) < 0) {
+            // maybe wait?
             perror("teapot::close_socket() > shutdown");
             return EXIT_FAILURE;
         }

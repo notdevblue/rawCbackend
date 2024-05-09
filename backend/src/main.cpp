@@ -2,18 +2,21 @@
 #include <string>
 #include <cl9s/teapot_server.h>
 #include <cl9s/statuscode.h>
+#include <memory>
 
 const int PORT = 30000;
 
 int main() {
-    cl9s::teapot_server serv = cl9s::teapot_server(PORT);
+    using namespace cl9s;
 
-    serv.route(cl9s::request_method::GET, "/", [](const cl9s::request::req& req, const cl9s::response::res& res) {
-        res.send("Install Gentoo and Remove Windows");
+    teapot_server serv = teapot_server(PORT);
+
+    serv.route(request_method::GET, "/", [](const request::req& req, const response::res& res) {
+        res.send(content::text("Install Gentoo and Remove Windows"));
     });
 
-    serv.route(cl9s::request_method::GET, "/index", [](auto req, auto res) {
-        res.view("/index.html");
+    serv.route(request_method::GET, "/index", [](auto req, auto res) {
+        res.send(content::text(std::make_unique<file>(file("/index.html"))));
     });
 
     auto handle_thread = serv.handle_client_connection();

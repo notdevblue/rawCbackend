@@ -150,7 +150,7 @@ namespace cl9s
 
             m_route_it = m_route.find(req_method);
             if (m_route_it == m_route.end()) {
-                res.send("Not Found.", status::NOT_FOUND);
+                res.send(content::text("Not Found."), status::NOT_FOUND);
                 continue;
             }
 
@@ -158,7 +158,7 @@ namespace cl9s
 
             m_route_path_it = inner_map->find(path.get());
             if (m_route_path_it == inner_map->end()) {
-                res.send("Not Found.", status::NOT_FOUND);
+                res.send(content::text("Not Found."), status::NOT_FOUND);
                 continue;
             }
 
