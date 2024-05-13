@@ -11,16 +11,16 @@ int main() {
 
     teapot_server serv = teapot_server(PORT);
 
-    serv.route(request_method::GET, "/", [](const request::req& req, const response::res& res) {
-        res.send(content::text("Install Gentoo and Remove Windows"));
+    serv.route(request_method::GET, "/", [](auto req, auto res) {
+        res->send(content::text("Install Gentoo and Remove Windows"));
     });
 
     serv.route(request_method::GET, "/index", [](auto req, auto res) {
-        res.send(content::text(std::make_unique<file>(file("/index.html"))));
+        res->send(content::text(std::make_unique<file>(file("/index.html"))));
     });
 
-    serv.route(request_method::POST, "/login", [](const request::req&, const response::res& res) {
-        res.send(content::text("Success!"));
+    serv.route(request_method::POST, "/login", [](auto req, auto res) {
+        res->send(content::text("Success!"));
     });
 
     auto handle_thread = serv.handle_client_connection();

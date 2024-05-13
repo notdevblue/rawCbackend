@@ -15,7 +15,7 @@ namespace cl9s
 {
 #define SERVER_BUFFER_SIZE 4096
 
-    typedef std::function<void(request::req, response::res)> t_route_lambda;
+    typedef std::function<void(request::req*, response::res*)> t_route_lambda;
 
     class teapot_server : public teapot {
     public:

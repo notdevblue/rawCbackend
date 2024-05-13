@@ -6,9 +6,9 @@ namespace cl9s::request
 {
     class req {
     public:
-        req(const std::string& header) {}
-        req(const req& other) {}
-        ~req() {}
+        req(const std::string location, const std::string querystring, const std::string header);
+        req(const req& other) = delete;
+        ~req();
 
     public:
         const std::string& get_querystring() const;
