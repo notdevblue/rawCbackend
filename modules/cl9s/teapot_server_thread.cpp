@@ -112,7 +112,7 @@ namespace cl9s
     void teapot_server::handle_client_thread(sock client_socket) {
         while (true) {
             char method[7];
-            strdup_raii path;
+            std::string path;
 
             if (
                 !handle_receive_header(
@@ -131,17 +131,20 @@ namespace cl9s
 
                         try {
                             strcpy(method, strtok_r(token, " ", &saveptr1));
-                            path.assign(strtok_r(NULL, " ", &saveptr1));
+                            path = strtok_r(NULL, " ", &saveptr1);
                         } catch (...)  {
                             return false;
                         }
 
-                        if (method == NULL || path.get() == NULL) {
+                        if (method == NULL || path.length() == 0) {
                             return false;
                         }
 
                         return true;
                     })) {
+#ifdef CONSOLE_LOG
+                printf("Invalid request head.\n");
+#endif
                 break; // close
             }
 
@@ -150,19 +153,25 @@ namespace cl9s
 
             m_route_it = m_route.find(req_method);
             if (m_route_it == m_route.end()) {
+#ifdef CONSOLE_LOG
+                printf("Request method <%s> not found.\n", method);
+#endif
                 res.send(content::text("Not Found."), status::NOT_FOUND);
                 continue;
             }
 
             const auto inner_map = &m_route[req_method];
 
-            m_route_path_it = inner_map->find(path.get());
+            m_route_path_it = inner_map->find(path);
             if (m_route_path_it == inner_map->end()) {
+#ifdef CONSOLE_LOG
+                printf("Request path <%s> not found.\n", path.c_str());
+#endif
                 res.send(content::text("Not Found."), status::NOT_FOUND);
                 continue;
             }
 
-            inner_map->at(path.get())(request::req("hello"), std::move(res));
+            inner_map->at(path)(request::req("hello"), std::move(res));
         }
 
         close_socket(client_socket);

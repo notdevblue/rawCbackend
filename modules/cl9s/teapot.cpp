@@ -1,5 +1,5 @@
 #include "teapot.h"
-#include "signal.h"
+#include <signal.h>
 
 #if CONSOLE_LOG
 #include <iostream>
@@ -14,16 +14,17 @@ namespace cl9s
         const bool& prevent_socket_creation,
         const int& reuse_address) : reuse_address(reuse_address)
     {
+
         request_method_from_string = {
-            {"GET", request_method::GET},
-            {"HEAD", request_method::HEAD},
-            {"POST", request_method::POST},
-            {"PUT", request_method::PUT},
-            {"DELETE", request_method::DELETE},
-            {"CONNECT", request_method::CONNECT},
-            {"OPTIONS", request_method::OPTIONS},
-            {"TRACE", request_method::TRACE},
-            {"PATCH", request_method::PATCH}};
+            {std::string("GET"), request_method::GET},
+            {std::string("HEAD"), request_method::HEAD},
+            {std::string("POST"), request_method::POST},
+            {std::string("PUT"), request_method::PUT},
+            {std::string("DELETE"), request_method::DELETE},
+            {std::string("CONNECT"), request_method::CONNECT},
+            {std::string("OPTIONS"), request_method::OPTIONS},
+            {std::string("TRACE"), request_method::TRACE},
+            {std::string("PATCH"), request_method::PATCH}};
 
         signal(SIGPIPE, sigpipe_handler);
     }
@@ -91,7 +92,7 @@ namespace cl9s
     }
 
 // public member functions
-    const request_method& teapot::str_to_request_method(char* method) {
+    const request_method& teapot::str_to_request_method(const std::string& method) {
         return request_method_from_string[method];
     }
 

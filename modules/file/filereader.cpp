@@ -35,7 +35,7 @@ const char* file::read() {
     return m_data;
 }
 
-const char* file::extension(){
+const char* file::extension() {
     return m_path.substr(m_path.find_last_of('.') + 1).c_str();
 }
 

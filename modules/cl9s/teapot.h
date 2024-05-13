@@ -7,8 +7,9 @@
 #include <unistd.h> // if compiling on windows, uninstall windows
 #include <cstdio>
 #include <cstdlib>
-#include <unordered_map>
+#include <map>
 #include <mutex>
+#include <string>
 
 #define IN
 #define OUT
@@ -64,7 +65,7 @@ namespace cl9s
         /// @brief Changes GET, POST, etc to request_method::GET, request_method::POST, etc.
         /// @param method request method
         /// @return method as request_method enum class
-        const request_method& str_to_request_method(char* method);
+        const request_method& str_to_request_method(const std::string& method);
 
         virtual void stop(const int& how, const char* errmsg = "") = 0;
 
@@ -79,7 +80,7 @@ namespace cl9s
             const int& protocol = IPPROTO_TCP) const;
 
     private:
-        std::unordered_map<const char*, request_method> request_method_from_string;
+        std::map<const std::string, request_method> request_method_from_string;
         std::mutex recv_mutex;
 
     private:

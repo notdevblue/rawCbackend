@@ -19,6 +19,10 @@ int main() {
         res.send(content::text(std::make_unique<file>(file("/index.html"))));
     });
 
+    serv.route(request_method::POST, "/login", [](const request::req&, const response::res& res) {
+        res.send(content::text("Success!"));
+    });
+
     auto handle_thread = serv.handle_client_connection();
 
     return 0;
