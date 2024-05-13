@@ -147,11 +147,23 @@ namespace cl9s
 
                             strcpy(method, tmp_method);                                 // req method
                             std::string tmp_full_path = strtok_r(NULL, " ", &saveptr1); // path (including querystring)
-
                             int querystr_begin_idx = tmp_full_path.find_first_of('?');
 
                             path = tmp_full_path.substr(0, querystr_begin_idx);
                             querystr = tmp_full_path.substr(querystr_begin_idx + 1);
+                            if (method == NULL || path.length() == 0) {
+    #ifdef CONSOLE_LOG
+                                puts("Invalid request head.\n");
+    #endif
+                                return 2;
+                            }
+
+                            char* body_saveptr;
+                            strdup_raii tmp_buffer_dup{buffer};
+                            strtok_r(tmp_buffer_dup.get(), "\n\n", &body_saveptr);
+                            std::cout << "BODY: " << strtok_r(NULL, "\n\n", &body_saveptr) << std::endl;
+                            // TODO: handle body
+                            req = std::make_shared<request::req>(path, querystr, "");
                         } catch (const std::exception& e) {
 #ifdef CONSOLE_LOG
                             std::cerr << e.what() << std::endl;
@@ -160,14 +172,7 @@ namespace cl9s
                             return 2;
                         }
 
-                        if (method == NULL || path.length() == 0) {
-#ifdef CONSOLE_LOG
-                            puts("Invalid request head.\n");
-#endif
-                            return 2;
-                        }
 
-                        req = std::make_shared<request::req>(path, querystr, buffer);
                         return 0;
                     }) != 0) {
                 switch (header_ok) {

@@ -3,9 +3,8 @@
 
 namespace cl9s::request
 {
-    req::req(const std::string location, const std::string querystring, const std::string header)
-        : m_location(location), m_querystring(querystring), m_content(header)
-    {
+    req::req(const std::string location, const std::string querystring, const std::string body)
+        : m_location(location), m_querystring(querystring), m_content(body) {
     }
 
     req::~req()
