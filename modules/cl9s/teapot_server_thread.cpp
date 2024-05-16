@@ -158,12 +158,12 @@ namespace cl9s
                                 return 2;
                             }
 
-                            char* body_saveptr;
-                            strdup_raii tmp_buffer_dup{buffer};
-                            strtok_r(tmp_buffer_dup.get(), "\n\n", &body_saveptr);
-                            std::cout << "BODY: " << strtok_r(NULL, "\n\n", &body_saveptr) << std::endl;
-                            // TODO: handle body
-                            req = std::make_shared<request::req>(path, querystr, "");
+                            std::string body{buffer};
+                            req = std::make_shared<request::req>(
+                                path,
+                                querystr,
+                                body.substr(body.find("\r\n\r\n") + 1) // TODO: does carriage return always included?
+                            );
                         } catch (const std::exception& e) {
 #ifdef CONSOLE_LOG
                             std::cerr << e.what() << std::endl;

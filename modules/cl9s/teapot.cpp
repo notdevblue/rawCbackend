@@ -42,6 +42,7 @@ namespace cl9s
         ssize_t res;
 
         res = ::send(client_socket, response, response_size, 0);
+        // TODO: Handle broken pipe cancellation point
 
         if (res < 0) {
             perror("teapot_server::send() > write");
