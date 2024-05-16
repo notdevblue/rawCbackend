@@ -67,17 +67,16 @@ namespace cl9s
 
     const bool teapot_server::handle_receive_header(
         sock& client_socket IN OUT,
-        std::function<const bool(const char* buffer, const int& len)> callback)
+        std::function<const bool(const std::string& buffer)> callback)
     {
-        std::unique_ptr<char[]> unique_buffer = create_buffer(); // FIXME: use shared buffer instead
-        char* buffer = unique_buffer.get();
+        char buffer[SERVER_BUFFER_SIZE];
 
         if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != 0) {
             // remote closed connection
             return false;
         }
 
-        return callback(buffer, strlen(buffer));
+        return callback(buffer);
     }
 
     void teapot_server::accept_client_thread() {
@@ -111,104 +110,37 @@ namespace cl9s
 
     void teapot_server::handle_client_thread(sock client_socket) {
         while (true) {
-            char method[7];
-            int header_ok = 0;
-            std::string path;
-            std::shared_ptr<request::req> req;
-            std::shared_ptr<response::res> res = std::make_shared<response::res>(client_socket);
+            request req = request();
+            response res{client_socket};
 
-            if (
-                header_ok = handle_receive_header(
-                    client_socket,
-                    [&method, &path, &req](const char* buffer, const int& len) -> const bool {
-                        char* saveptr1;
-                        char* token;
-                        std::string querystr;
-                        strdup_raii copiedstr{buffer};
-
-                        token = strtok_r(copiedstr.get(), "\n", &saveptr1);
-                        if (token == NULL) {
-#ifdef CONSOLE_LOG
-                            puts("Invalid header.\n");
-#endif
-                            return 1;
-                        }
-
-                        saveptr1 = nullptr;
-
-                        try {
-                            char* tmp_method = strtok_r(token, " ", &saveptr1);
-                            if (strlen(tmp_method) > 7 || tmp_method == nullptr) {
-#ifdef CONSOLE_LOG
-                                puts("Invalid request method.\n");
-#endif
-                                return 1;
-                            }
-
-                            strcpy(method, tmp_method);                                 // req method
-                            std::string tmp_full_path = strtok_r(NULL, " ", &saveptr1); // path (including querystring)
-                            int querystr_begin_idx = tmp_full_path.find_first_of('?');
-
-                            path = tmp_full_path.substr(0, querystr_begin_idx);
-                            querystr = tmp_full_path.substr(querystr_begin_idx + 1);
-                            if (method == NULL || path.length() == 0) {
-    #ifdef CONSOLE_LOG
-                                puts("Invalid request head.\n");
-    #endif
-                                return 2;
-                            }
-
-                            std::string body{buffer};
-                            req = std::make_shared<request::req>(
-                                path,
-                                querystr,
-                                body.substr(body.find("\r\n\r\n") + 1) // TODO: does carriage return always included?
-                            );
-                        } catch (const std::exception& e) {
-#ifdef CONSOLE_LOG
-                            std::cerr << e.what() << std::endl;
-                            puts("Header parse failed.\n");
-#endif
-                            return 2;
-                        }
-
-
-                        return 0;
-                    }) != 0) {
-                switch (header_ok) {
-                    case 1:
-                        res->send(content::text("Bad Request"), status::BAD_REQUEST);
-                        break;
-                    case 2:
-                        res->send(content::text("Internal Server Error"), status::INTERNAL_SERVER_ERROR);
-                        break;
-                };
+            if (handle_receive_header(client_socket, [&req](auto buf) { return req.set(buf); })) {
+                res.send(content::text("Bad request."), status::BAD_REQUEST);
                 break; // close
             }
 
-            request_method req_method = str_to_request_method(method);
-
-            m_route_it = m_route.find(req_method);
+            const request_method& method = req.get_method();
+            m_route_it = m_route.find(method);
             if (m_route_it == m_route.end()) {
 #ifdef CONSOLE_LOG
-                printf("Request method <%s> not found.\n", method);
+                perror("Request method not found.\n");
 #endif
-                res->send(content::text("Not Found."), status::NOT_FOUND);
+                res.send(content::text("Not Found."), status::NOT_FOUND);
                 continue;
             }
 
-            const auto inner_map = &m_route[req_method];
+            const auto inner_map = &m_route[method];
+            const std::string path = req.get_location();
 
             m_route_path_it = inner_map->find(path);
             if (m_route_path_it == inner_map->end()) {
 #ifdef CONSOLE_LOG
-                printf("Request path <%s> not found.\n", path.c_str());
+                perror("Request path not found.\n");
 #endif
-                res->send(content::text("Not Found."), status::NOT_FOUND);
+                res.send(content::text("Not Found."), status::NOT_FOUND);
                 continue;
             }
 
-            inner_map->at(path)(req.get(), res.get());
+            inner_map->at(path)(std::move(req), std::move(res));
         }
 
         close_socket(client_socket);

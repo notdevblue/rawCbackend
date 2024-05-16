@@ -6,12 +6,12 @@
 #include <string>
 
 
-namespace cl9s::response
+namespace cl9s
 {
-    class res {
+    class response {
     public:
-        res(sock& client_socket);
-        ~res();
+        response(sock& client_socket);
+        ~response();
 
         const sock& get_client() const;
 

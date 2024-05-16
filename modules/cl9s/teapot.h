@@ -65,7 +65,7 @@ namespace cl9s
         /// @brief Changes GET, POST, etc to request_method::GET, request_method::POST, etc.
         /// @param method request method
         /// @return method as request_method enum class
-        const request_method& str_to_request_method(const std::string& method);
+        static const request_method& str_to_request_method(const std::string& method);
 
         virtual void stop(const int& how, const char* errmsg = "") = 0;
 

@@ -9,20 +9,20 @@
 #include <iostream>
 #endif
 
-namespace cl9s::response
+namespace cl9s
 {
 
-    res::res(sock& client_socket) : m_client_socket(client_socket) {
+    response::response(sock& client_socket) : m_client_socket(client_socket) {
     }
 
-    res::~res() {
+    response::~response() {
     }
 
-    const sock& res::get_client() const {
+    const sock& response::get_client() const {
         return m_client_socket;
     }
 
-    const std::string res::get_date_string() const {
+    const std::string response::get_date_string() const {
         time_t t;
         tm* tm;
         char date[37];
@@ -35,7 +35,7 @@ namespace cl9s::response
         return date;
     }
 
-    void res::send(const content::contents& data, const status& code) const {
+    void response::send(const content::contents& data, const status& code) const {
         std::string response_text = std::string{create_status_header(code)}
                                         .append("Connection: Keep-Alive\n")
                                         .append(data.get_header_str())

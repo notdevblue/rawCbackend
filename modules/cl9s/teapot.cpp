@@ -15,16 +15,8 @@ namespace cl9s
         const int& reuse_address) : reuse_address(reuse_address)
     {
 
-        request_method_from_string = {
-            {std::string("GET"), request_method::GET},
-            {std::string("HEAD"), request_method::HEAD},
-            {std::string("POST"), request_method::POST},
-            {std::string("PUT"), request_method::PUT},
-            {std::string("DELETE"), request_method::DELETE},
-            {std::string("CONNECT"), request_method::CONNECT},
-            {std::string("OPTIONS"), request_method::OPTIONS},
-            {std::string("TRACE"), request_method::TRACE},
-            {std::string("PATCH"), request_method::PATCH}};
+        // request_method_from_string = {
+
 
         signal(SIGPIPE, sigpipe_handler);
     }
@@ -92,9 +84,20 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-// public member functions
     const request_method& teapot::str_to_request_method(const std::string& method) {
-        return request_method_from_string[method];
+        static std::map<std::string, request_method> local_map {
+            {"GET", request_method::GET},
+            {"HEAD", request_method::HEAD},
+            {"POST", request_method::POST},
+            {"PUT", request_method::PUT},
+            {"DELETE", request_method::DELETE},
+            {"CONNECT", request_method::CONNECT},
+            {"OPTIONS", request_method::OPTIONS},
+            {"TRACE", request_method::TRACE},
+            {"PATCH", request_method::PATCH}
+        };
+
+        return local_map[method.c_str()];
     }
 
 // protected member functions
