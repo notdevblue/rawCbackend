@@ -41,6 +41,7 @@ namespace cl9s
             return false; // invalid header
         }
 
+        // request method
         std::istringstream head_stream{line};
         std::string method_str;
         if (!std::getline(head_stream, method_str, ' ')) {
@@ -48,20 +49,22 @@ namespace cl9s
         }
         m_method = teapot::str_to_request_method(method_str);
 
+        // request href
         std::string href;
-        std::size_t query_begin_idx;
         if (!std::getline(head_stream, href, ' ')) {
             return false; // invalid header
         }
 
-        query_begin_idx = href.find_first_of('?');
+        // location
+        const std::size_t query_begin_idx = href.find_first_of('?');
+        m_location = href.substr(0, query_begin_idx); // default is npos
+
+        // querystring
         if (query_begin_idx != std::string::npos) {
-            m_location = href.substr(0, query_begin_idx);
             m_querystring = href.substr(query_begin_idx + (std::size_t)1);
-        } else {
-            m_location = href;
         }
 
+        // etc
         for (line; std::getline(header_stream, line);) {
             std::cout << line << std::endl; // TODO: map it
         }
