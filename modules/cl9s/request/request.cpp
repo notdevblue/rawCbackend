@@ -63,7 +63,7 @@ namespace cl9s
         }
 
         for (line; std::getline(header_stream, line);) {
-            std::cout << line << std::endl;
+            std::cout << line << std::endl; // TODO: map it
         }
 
         return true;
