@@ -67,12 +67,14 @@ namespace cl9s
 
     const bool teapot_server::handle_receive_header(
         sock& client_socket IN OUT,
-        std::function<const bool(const std::string& buffer)> callback)
+        std::function<const bool(const char* buffer)> callback)
     {
+        puts("Handle recv handler");
         char buffer[SERVER_BUFFER_SIZE];
 
-        if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != 0) {
+        if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
             // remote closed connection
+            puts("Non zero result");
             return false;
         }
 
@@ -124,7 +126,9 @@ namespace cl9s
 #ifdef CONSOLE_LOG
                 perror("Request method not found.\n");
 #endif
-                res.send(content::text("Not Found."), status::NOT_FOUND);
+                if (res.send(content::text("Not Found."), status::NOT_FOUND) == EXIT_FAILURE) {
+                    break;
+                }
                 continue;
             }
 
@@ -134,9 +138,11 @@ namespace cl9s
             m_route_path_it = inner_map->find(path);
             if (m_route_path_it == inner_map->end()) {
 #ifdef CONSOLE_LOG
-                perror("Request path not found.\n"); // FIXME: id=asd => id= 하면 여기로 옴
+                perror("Request path not found.\n");
 #endif
-                res.send(content::text("Not Found."), status::NOT_FOUND);
+                if (res.send(content::text("Not Found."), status::NOT_FOUND) == EXIT_FAILURE) {
+                    break;
+                }
                 continue;
             }
 
@@ -144,5 +150,6 @@ namespace cl9s
         }
 
         close_socket(client_socket);
+        return;
     }
 }

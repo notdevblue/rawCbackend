@@ -15,7 +15,11 @@ namespace cl9s
 
         const sock& get_client() const;
 
-        void send(const content::contents& data, const status& code = status::OK) const;
+        /// @brief sends content
+        /// @param data content to send
+        /// @param code response status code
+        /// @return EXIT_SUCCESS on Success, EXIT_FAILURE on Fail
+        const int send(const content::contents& data, const status& code = status::OK) const;
 
     private:
         const std::string get_date_string() const;

@@ -35,7 +35,7 @@ namespace cl9s
         return date;
     }
 
-    void response::send(const content::contents& data, const status& code) const {
+    const int response::send(const content::contents& data, const status& code) const {
         std::string response_text = std::string{create_status_header(code)}
                                         .append("Connection: Keep-Alive\n")
                                         .append(data.get_header_str())
@@ -48,6 +48,6 @@ namespace cl9s
         std::cout << "Response: \n" << response_text << std::endl;
 #endif
 
-        teapot_server::send(m_client_socket, response_text.c_str(), response_text.length());
+        return teapot_server::send(m_client_socket, response_text.c_str(), response_text.length());
     }
 }

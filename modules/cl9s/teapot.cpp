@@ -7,9 +7,6 @@
 
 namespace cl9s
 {
-    void sigpipe_handler(int sigtype) {
-    }
-
     teapot::teapot(
         const bool& prevent_socket_creation,
         const int& reuse_address) : reuse_address(reuse_address)
@@ -18,7 +15,7 @@ namespace cl9s
         // request_method_from_string = {
 
 
-        signal(SIGPIPE, sigpipe_handler);
+        signal(SIGPIPE, SIG_IGN);
     }
 
     teapot::~teapot() 
@@ -33,11 +30,11 @@ namespace cl9s
     {
         ssize_t res;
 
-        res = ::send(client_socket, response, response_size, 0);
+        res = ::send(client_socket, response, response_size, MSG_NOSIGNAL);
         // TODO: Handle broken pipe cancellation point
 
         if (res < 0) {
-            perror("teapot_server::send() > write");
+            perror("teapot_server::send()");
             return EXIT_FAILURE;
         }
 
@@ -59,11 +56,11 @@ namespace cl9s
         } while (received > 0 && buffer[received] > 0);
 
         if (received == 0) {
-            return 1; // close, same as EXIT_FAILURE
+            return 1;
         }
 
         if (received < 0) {
-            perror("teapot_server::receive() > read");
+            perror("teapot_server::receive()");
             return EXIT_FAILURE;
         }
 
@@ -76,8 +73,7 @@ namespace cl9s
         }
 
         if (shutdown(socket, how) < 0) {
-            // maybe wait?
-            perror("teapot::close_socket() > shutdown");
+            perror("teapot::close_socket()");
             return EXIT_FAILURE;
         }
 
