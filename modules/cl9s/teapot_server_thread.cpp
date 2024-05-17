@@ -134,7 +134,7 @@ namespace cl9s
             m_route_path_it = inner_map->find(path);
             if (m_route_path_it == inner_map->end()) {
 #ifdef CONSOLE_LOG
-                perror("Request path not found.\n");
+                perror("Request path not found.\n"); // FIXME: id=asd => id= 하면 여기로 옴
 #endif
                 res.send(content::text("Not Found."), status::NOT_FOUND);
                 continue;

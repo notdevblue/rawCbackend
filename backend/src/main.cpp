@@ -20,6 +20,9 @@ int main() {
     });
 
     serv.route(request_method::POST, "/login", [](const request& req, const response& res) {
+
+        std::cout << "ID: " << req.get_querystring("id") << std::endl;
+
         res.send(content::text("Success!"));
     });
 

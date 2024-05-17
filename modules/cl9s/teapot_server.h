@@ -15,7 +15,7 @@ namespace cl9s
 {
 #define SERVER_BUFFER_SIZE 4096
 
-    typedef std::function<void(const request&&, const response&&)> t_route_lambda;
+    typedef std::function<void(const request&&, const response&&)> route_lambda_t;
 
     class teapot_server : public teapot {
     public:
@@ -24,12 +24,12 @@ namespace cl9s
         teapot_server(const uint16_t& port, const int& reuse_address = 1) : teapot(false, reuse_address) {
             m_port = port;
             m_bKeepAcceptConnection = true;
-            m_route = std::map<request_method, std::map<std::string, t_route_lambda>>();
+            m_route = std::map<request_method, std::map<std::string, route_lambda_t>>();
 
             for (request_method req_method = (request_method)0;
                 req_method < request_method::END_OF_ENUM;
                 req_method = (request_method)((int)req_method + 1)) {
-                m_route[req_method] = std::map<std::string, t_route_lambda>();
+                m_route[req_method] = std::map<std::string, route_lambda_t>();
             }
         }
 
@@ -41,7 +41,7 @@ namespace cl9s
 
     public:
 
-        void route(const request_method& method, const std::string& href, const t_route_lambda& callback);
+        void route(const request_method& method, const std::string& href, const route_lambda_t& callback);
 
         // Summary:
         //  handles client connection
@@ -93,8 +93,8 @@ namespace cl9s
         bool m_bKeepAcceptConnection;
 
         std::shared_ptr<std::thread> m_connection_thread;
-        std::map<request_method, std::map<std::string, t_route_lambda>> m_route;
-        std::map<request_method, std::map<std::string, t_route_lambda>>::iterator m_route_it;
-        std::map<std::string, t_route_lambda>::iterator m_route_path_it;
+        std::map<request_method, std::map<std::string, route_lambda_t>> m_route;
+        std::map<request_method, std::map<std::string, route_lambda_t>>::iterator m_route_it;
+        std::map<std::string, route_lambda_t>::iterator m_route_path_it;
     };
 };
