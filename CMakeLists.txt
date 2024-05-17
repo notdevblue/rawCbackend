@@ -12,6 +12,7 @@ set(outputName teapot.out)
 set(modulePath ${CMAKE_SOURCE_DIR}/modules)
 
 # add_compile_definitions(CONSOLE_LOG)
+add_compile_definitions(REQ_DEBUG)
 add_compile_definitions(PROJECT_ROOT="${CMAKE_SOURCE_DIR}")
 add_compile_definitions(PUBLICS="${CMAKE_SOURCE_DIR}/public")
 

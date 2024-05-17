@@ -14,45 +14,45 @@ namespace cl9s
     {
     }
 
-    const bool request::set(const std::string& buffer) {
+    const int request::set(const std::string& buffer) {
         std::size_t body_start_idx = buffer.find_first_of("\r\n\r\n");
         if (body_start_idx == std::string::npos) {
-            return false; // invalid header (bad reqeust)
+            return EXIT_FAILURE; // invalid header (bad reqeust)
         }
 
-        if (!parse_header(buffer.substr(0, body_start_idx))) {
-            return false; // invalid header (bad_request)
+        if (parse_header(buffer.substr(0, body_start_idx)) != EXIT_SUCCESS) {
+            return EXIT_FAILURE; // invalid header (bad_request)
         }
 
         if (body_start_idx + 1 < buffer.length()) {
-            if (!parse_body(buffer.substr(body_start_idx + (std::size_t)1))) {
-                return false; // bad request
+            if (parse_body(buffer.substr(body_start_idx + (std::size_t)1)) != EXIT_SUCCESS) {
+                return EXIT_FAILURE; // bad request
             }
         }
 
-        return true;
+        return EXIT_SUCCESS;
     }
 
-    const bool request::parse_header(const std::string& header) {
+    const int request::parse_header(const std::string& header) {
         std::istringstream header_stream{header};
         std::string line;
 
         if (!std::getline(header_stream, line)) {
-            return false; // invalid header
+            return EXIT_FAILURE; // invalid header
         }
 
         // request method
         std::istringstream head_stream{line};
         std::string method_str;
         if (!std::getline(head_stream, method_str, ' ')) {
-            return false; // invalid header
+            return EXIT_FAILURE; // invalid header
         }
         m_method = teapot::str_to_request_method(method_str);
 
         // request href
         std::string href;
         if (!std::getline(head_stream, href, ' ')) {
-            return false; // invalid header
+            return EXIT_FAILURE; // invalid header
         }
 
         // location
@@ -69,11 +69,11 @@ namespace cl9s
             std::cout << line << std::endl; // TODO: map it
         }
 
-        return true;
+        return EXIT_SUCCESS;
     }
 
     const int request::parse_body(const std::string& body) {
-        return 0;
+        return EXIT_SUCCESS;
     }
 
     void request::parse_querystring(const std::string& querystring) {

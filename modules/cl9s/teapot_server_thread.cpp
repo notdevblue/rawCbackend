@@ -65,17 +65,16 @@ namespace cl9s
         return true;
     }
 
-    const bool teapot_server::handle_receive_header(
+    const int teapot_server::handle_receive_header(
         sock& client_socket IN OUT,
-        std::function<const bool(const char* buffer)> callback)
+        std::function<const int(const char* buffer)> callback)
     {
-        puts("Handle recv handler");
         char buffer[SERVER_BUFFER_SIZE];
 
         if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
             // remote closed connection
             puts("Non zero result");
-            return false;
+            return EXIT_FAILURE;
         }
 
         return callback(buffer);
@@ -115,7 +114,11 @@ namespace cl9s
             request req = request();
             response res{client_socket};
 
-            if (handle_receive_header(client_socket, [&req](auto buf) { return req.set(buf); })) {
+            if (handle_receive_header(client_socket, [&req](auto buf) { return req.set(buf); }) != EXIT_SUCCESS) {
+#ifdef REQ_DEBUG
+                req.print_debug_information();
+#endif
+
                 res.send(content::text("Bad request."), status::BAD_REQUEST);
                 break; // close
             }
@@ -150,6 +153,8 @@ namespace cl9s
         }
 
         close_socket(client_socket);
+
+        puts("end thread");
         return;
     }
 }

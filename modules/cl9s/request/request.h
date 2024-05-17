@@ -3,6 +3,10 @@
 #include <string>
 #include <map>
 
+#ifdef REQ_DEBUG
+#include <iostream>
+#endif
+
 namespace cl9s
 {
     class request {
@@ -17,10 +21,24 @@ namespace cl9s
         const std::string& get_content() const;
         const request_method& get_method() const;
 
-        const bool set(const std::string& buffer);
+        /// @brief initializes requset class
+        /// @param buffer 
+        /// @return EXIT_SUCCESS on Success, EXIT_FAILURE on Fail
+        const int set(const std::string& buffer);
+
+#ifdef REQ_DEBUG
+        void print_debug_information() {
+            std::cout << "location: " << m_location;
+            for (auto& kv : m_querystring) {
+                std::cout << "{ " << kv.first << ":" << kv.second << "}, ";
+            }
+
+            std::cout << std::endl;
+        }
+#endif
 
     private:
-        const bool parse_header(const std::string& header);
+        const int parse_header(const std::string& header);
         const int parse_body(const std::string& body);
 
         void parse_querystring(const std::string& querystring);
