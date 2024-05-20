@@ -26,17 +26,6 @@ namespace cl9s
         /// @return EXIT_SUCCESS on Success, EXIT_FAILURE on Fail
         const int set(const std::string& buffer);
 
-#ifdef REQ_DEBUG
-        void print_debug_information() const {
-            std::cout << "location: " << m_location << std::endl;
-            for (auto& kv : m_querystring) {
-                std::cout << "{ " << kv.first << ":" << kv.second << " }, ";
-            }
-
-            std::cout << std::endl;
-        }
-#endif
-
     private:
         const int parse_header(const std::string& header);
         const int parse_body(const std::string& body);

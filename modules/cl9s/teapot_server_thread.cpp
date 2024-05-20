@@ -73,7 +73,9 @@ namespace cl9s
 
         if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
             // remote closed connection
+#ifdef CONSOLE_LOG
             puts("Non zero result");
+#endif
             return EXIT_FAILURE;
         }
 
@@ -118,9 +120,6 @@ namespace cl9s
             response res{client_socket};
 
             if (handle_receive_header(client_socket, [&req](auto buf) { return req.set(buf); }) != EXIT_SUCCESS) {
-#ifdef REQ_DEBUG
-                req.print_debug_information();
-#endif
                 break; // close
             }
 
