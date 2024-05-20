@@ -17,15 +17,24 @@ namespace cl9s
     const int request::set(const std::string& buffer) {
         std::size_t body_start_idx = buffer.find_first_of("\r\n\r\n");
         if (body_start_idx == std::string::npos) {
+#ifdef CONSOLE_LOG
+            printf("Header does not contains space for body.\n");
+#endif
             return EXIT_FAILURE; // invalid header (bad reqeust)
         }
 
         if (parse_header(buffer.substr(0, body_start_idx)) != EXIT_SUCCESS) {
+#ifdef CONSOLE_LOG
+            printf("Header parse failed.\n");
+#endif
             return EXIT_FAILURE; // invalid header (bad_request)
         }
 
         if (body_start_idx + 1 < buffer.length()) {
             if (parse_body(buffer.substr(body_start_idx + (std::size_t)1)) != EXIT_SUCCESS) {
+#ifdef CONSOLE_LOG
+                printf("Body parse failed.\n");
+#endif
                 return EXIT_FAILURE; // bad request
             }
         }

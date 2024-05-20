@@ -27,10 +27,10 @@ namespace cl9s
         const int set(const std::string& buffer);
 
 #ifdef REQ_DEBUG
-        void print_debug_information() {
-            std::cout << "location: " << m_location;
+        void print_debug_information() const {
+            std::cout << "location: " << m_location << std::endl;
             for (auto& kv : m_querystring) {
-                std::cout << "{ " << kv.first << ":" << kv.second << "}, ";
+                std::cout << "{ " << kv.first << ":" << kv.second << " }, ";
             }
 
             std::cout << std::endl;

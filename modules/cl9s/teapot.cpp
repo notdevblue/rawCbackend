@@ -3,6 +3,7 @@
 
 #if CONSOLE_LOG
 #include <iostream>
+#include <string.h>
 #endif
 
 namespace cl9s
@@ -28,10 +29,10 @@ namespace cl9s
         const char* response,
         const size_t& response_size)
     {
-        ssize_t res;
-
-        res = ::send(client_socket, response, response_size, MSG_NOSIGNAL);
-        // TODO: Handle broken pipe cancellation point
+#if CONSOLE_LOG
+        printf("sock: %d\n", client_socket);
+#endif
+        ssize_t res = ::send(client_socket, response, response_size, MSG_NOSIGNAL);
 
         if (res < 0) {
             perror("teapot_server::send()");
@@ -50,17 +51,15 @@ namespace cl9s
 
         do {
             received = read(client_socket, buffer, buffer_size);
+            
 #if CONSOLE_LOG
-            printf("len: %ld\nRequest:\n%s\n", received, buffer);
+            printf("sock: %d, len: %ld, Request:\n%s\n", client_socket, received, buffer);
 #endif
         } while (received > 0 && buffer[received] > 0);
 
-        if (received == 0) {
-            return 1;
-        }
-
         if (received < 0) {
             perror("teapot_server::receive()");
+            
             return EXIT_FAILURE;
         }
 

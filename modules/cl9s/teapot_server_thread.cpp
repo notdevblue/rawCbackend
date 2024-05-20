@@ -69,7 +69,7 @@ namespace cl9s
         sock& client_socket IN OUT,
         std::function<const int(const char* buffer)> callback)
     {
-        char buffer[SERVER_BUFFER_SIZE];
+        char buffer[SERVER_BUFFER_SIZE] = {0};
 
         if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
             // remote closed connection
@@ -110,6 +110,9 @@ namespace cl9s
     }
 
     void teapot_server::handle_client_thread(sock client_socket) {
+#ifdef CONSOLE_LOG
+        printf("socket %d connected.\n", client_socket);
+#endif
         while (true) {
             request req = request();
             response res{client_socket};
@@ -118,8 +121,6 @@ namespace cl9s
 #ifdef REQ_DEBUG
                 req.print_debug_information();
 #endif
-
-                res.send(content::text("Bad request."), status::BAD_REQUEST);
                 break; // close
             }
 
@@ -135,11 +136,11 @@ namespace cl9s
                 continue;
             }
 
-            const auto inner_map = &m_route[method];
+            auto inner_map = m_route[method];
             const std::string path = req.get_location();
 
-            m_route_path_it = inner_map->find(path);
-            if (m_route_path_it == inner_map->end()) {
+            m_route_path_it = inner_map.find(path);
+            if (m_route_path_it == inner_map.end()) {
 #ifdef CONSOLE_LOG
                 perror("Request path not found.\n");
 #endif
@@ -149,12 +150,13 @@ namespace cl9s
                 continue;
             }
 
-            inner_map->at(path)(std::move(req), std::move(res));
+            inner_map.at(path)(std::move(req), std::move(res));
         }
 
         close_socket(client_socket);
-
-        puts("end thread");
+#ifdef CONSOLE_LOG
+        printf("socket %d closed.\n", client_socket);
+#endif
         return;
     }
 }
