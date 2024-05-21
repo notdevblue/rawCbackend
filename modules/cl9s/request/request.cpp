@@ -8,6 +8,8 @@ namespace cl9s
 {
     request::request() {
         m_querystring = std::map<const std::string, std::string>();
+        m_header_contents = std::map<const std::string, std::string>();
+        m_querystring["NULL"] = "";
     }
 
     request::~request()
@@ -15,11 +17,13 @@ namespace cl9s
     }
 
     const int request::set(const std::string& buffer) {
-        std::size_t body_start_idx = buffer.find_first_of("\r\n\r\n");
+        std::size_t body_start_idx = buffer.find("\r\n\r\n");
         if (body_start_idx == std::string::npos) {
 #ifdef CONSOLE_LOG
             printf("Header does not contains space for body.\n");
 #endif
+            // FIXME: not a bad request.
+            // body followed after this packet
             return EXIT_FAILURE; // invalid header (bad reqeust)
         }
 
@@ -74,8 +78,13 @@ namespace cl9s
         }
 
         // etc
-        for (line; std::getline(header_stream, line);) {
-            std::cout << line << std::endl; // TODO: map it
+        std::size_t kv_seperator_idx;
+        for (; std::getline(header_stream, line);) {
+            if ((kv_seperator_idx = line.find_first_of(':')) == std::string::npos) {
+                continue;
+            }
+
+            m_header_contents[line.substr(0, kv_seperator_idx)] = line.substr(kv_seperator_idx + 1);
         }
 
         return EXIT_SUCCESS;
@@ -89,7 +98,7 @@ namespace cl9s
         std::istringstream querystring_stream{querystring};
         std::string key_value_string;
 
-        for (key_value_string; std::getline(querystring_stream, key_value_string, '&');) {
+        for (; std::getline(querystring_stream, key_value_string, '&');) {
             std::size_t seperator_idx = key_value_string.find_first_of('=');
             if (seperator_idx == std::string::npos) {
                 continue;
@@ -97,11 +106,9 @@ namespace cl9s
 
             m_querystring[key_value_string.substr(0, seperator_idx)] = key_value_string.substr(seperator_idx + 1);
         }
-
-        m_querystring["NULL"] = "";
     }
 
-    const std::string& request::get_querystring(const std::string& key) const {
+    const std::string& request::get_querystring(const char* key) const {
         auto iter = m_querystring.find(key);
         if (iter == m_querystring.end()) {
             return m_querystring.at("NULL");
