@@ -1,14 +1,5 @@
-#include <cstdlib>
-#include <string.h>
-#include <thread>
-#include <unistd.h>
-#include <stdio.h>
-#include <memory>
-
-#include "teapot_server.h"
+#include <cl9s/teapot_server.h>
 #include "../strdup_raii/strdup_raii.h"
-
-#define DEAFULT_FAILSAFE_COUNT 50
 
 namespace cl9s
 {
@@ -22,64 +13,6 @@ namespace cl9s
         }
 
         return m_connection_thread;
-    }
-
-    void teapot_server::stop(const int& how, const char* errmsg) {
-        m_bKeepAcceptConnection = false;
-
-        if (how == STOP_EXCEPTION) {
-            printf("Called stop with exception\n");
-            perror(errmsg);
-            exit(EXIT_FAILURE);
-            return;
-        }
-    }
-
-    sock teapot_server::handle_create() {
-        sock socket;
-        if (create_socket(&socket) < 0) {
-            close(socket);
-
-            return 0;
-        }
-
-        return socket;
-    }
-
-    const bool teapot_server::handle_listen(sock& socket IN) {
-        if (listen_connection(socket) != 0) {
-            close(socket);
-            return false;
-        }
-
-        return true;
-    }
-
-    const bool teapot_server::handle_accept(const sock& listening_socket, sock& client_socket OUT) {
-        if (accept_client(listening_socket, &client_socket) != 0) {
-            close(listening_socket);
-            return false;
-        }
-
-        close(listening_socket);
-        return true;
-    }
-
-    const int teapot_server::handle_receive_header(
-        sock& client_socket IN OUT,
-        std::function<const int(const char* buffer)> callback)
-    {
-        char buffer[SERVER_BUFFER_SIZE] = {0};
-
-        if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
-            // remote closed connection
-#ifdef CONSOLE_LOG
-            puts("Non zero result");
-#endif
-            return EXIT_FAILURE;
-        }
-
-        return callback(buffer);
     }
 
     void teapot_server::accept_client_thread() {

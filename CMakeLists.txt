@@ -20,7 +20,7 @@ add_executable(
     ${CMAKE_SOURCE_DIR}/backend/src/main.cpp
     ${modulePath}/cl9s/teapot.cpp
     ${modulePath}/cl9s/teapot_server.cpp
-    ${modulePath}/cl9s/teapot_server_thread.cpp
+    ${modulePath}/cl9s/teapot_client_loop.cpp
     ${modulePath}/cl9s/request/request.cpp
     ${modulePath}/cl9s/response/response.cpp
     ${modulePath}/cl9s/content/content_types.cpp
