@@ -74,14 +74,13 @@ namespace cl9s
         //  0 when connection is closed
         const bool is_client_alive(const sock& client_socket) const = delete;
 
-        std::unique_ptr<char[]> create_buffer(const int& size = SERVER_BUFFER_SIZE) const;
-
         virtual void stop(const int& how, const char* errmsg = "") override;
 
     protected:
         void accept_client_thread();
         void handle_client_thread(sock client_socket);
 
+        // TODO: Rename these functions
         sock handle_create();
         const bool handle_listen(sock& socket IN);
         const bool handle_accept(const sock& listening_socket, sock& client_socket OUT);

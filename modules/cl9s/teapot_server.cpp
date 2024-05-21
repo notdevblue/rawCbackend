@@ -60,10 +60,6 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    std::unique_ptr<char[]> teapot_server::create_buffer(const int& size) const {
-        return std::make_unique<char[]>(size);
-    }
-
     void teapot_server::route(const request_method& method, const std::string& href, const route_lambda_t& callback) {
         if (m_route[method][href] != NULL) {
             std::cout << "Overwriting route: " << href << std::endl;
