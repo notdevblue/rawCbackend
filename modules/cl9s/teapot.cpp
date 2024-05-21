@@ -80,7 +80,7 @@ namespace cl9s
     }
 
     const request_method& teapot::str_to_request_method(const std::string& method) {
-        static std::map<std::string, request_method> local_map {
+        static std::map<const std::string, request_method> local_map {
             {"GET", request_method::GET},
             {"HEAD", request_method::HEAD},
             {"POST", request_method::POST},
@@ -92,7 +92,7 @@ namespace cl9s
             {"PATCH", request_method::PATCH}
         };
 
-        return local_map[method.c_str()];
+        return local_map[method];
     }
 
 // protected member functions
