@@ -30,7 +30,7 @@ namespace cl9s
         const size_t& response_size)
     {
 #if CONSOLE_LOG
-        printf("sock: %d\n", client_socket);
+        printf("send to sock: %d, len: %ld, Response: %s\n", client_socket, response_size, response);
 #endif
         ssize_t res = ::send(client_socket, response, response_size, MSG_NOSIGNAL);
 
@@ -53,7 +53,7 @@ namespace cl9s
             received = read(client_socket, buffer, buffer_size);
             
 #if CONSOLE_LOG
-            printf("sock: %d, len: %ld, Request:\n%s\n", client_socket, received, buffer);
+            printf("recv from sock: %d, len: %ld, Request:\n%s\n", client_socket, received, buffer);
 #endif
         } while (received > 0 && buffer[received] > 0);
 

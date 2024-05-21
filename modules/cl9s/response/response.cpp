@@ -44,10 +44,6 @@ namespace cl9s
                                         .append("\n")
                                         .append(data.get_data());
 
-#ifdef CONSOLE_LOG
-        std::cout << "Response: \n" << response_text << std::endl;
-#endif
-
         return teapot_server::send(m_client_socket, response_text.c_str(), response_text.length());
     }
 }
