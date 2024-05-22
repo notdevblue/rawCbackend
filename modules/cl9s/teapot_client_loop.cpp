@@ -55,6 +55,7 @@ namespace cl9s
 
             if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
                 puts("Non zero result");
+                break;
             }
 
             if (req.set(buffer) != EXIT_SUCCESS) {
