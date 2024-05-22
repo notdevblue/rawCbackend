@@ -71,8 +71,10 @@ namespace cl9s
     void teapot_server::stop(const int& how, const char* errmsg) {
         m_bKeepAcceptConnection = false;
 
+        m_connection_thread->detach();
+
         if (how == STOP_EXCEPTION) {
-            printf("Called stop with exception\n");
+            (void)printf("Called stop with exception\n");
             perror(errmsg);
             exit(EXIT_FAILURE);
             return;
@@ -82,7 +84,7 @@ namespace cl9s
     sock teapot_server::handle_create() {
         sock socket;
         if (create_socket(&socket) < 0) {
-            close(socket);
+            (void)close(socket);
 
             return 0;
         }
@@ -92,7 +94,7 @@ namespace cl9s
 
     const bool teapot_server::handle_listen(sock& socket IN) {
         if (listen_connection(socket) != 0) {
-            close(socket);
+            (void)close(socket);
             return false;
         }
 
@@ -101,11 +103,11 @@ namespace cl9s
 
     const bool teapot_server::handle_accept(const sock& listening_socket, sock& client_socket OUT) {
         if (accept_client(listening_socket, &client_socket) != 0) {
-            close(listening_socket);
+            (void)close(listening_socket);
             return false;
         }
 
-        close(listening_socket);
+        (void)close(listening_socket);
         return true;
     }
 

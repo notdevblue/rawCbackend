@@ -3,7 +3,7 @@
 
 namespace cl9s
 {
-    const std::shared_ptr<std::thread>& teapot_server::handle_client_connection(const bool& silent_startup) {
+    void teapot_server::handle_client_connection(const bool& silent_startup) {
         m_connection_thread = std::make_shared<std::thread>([this] { this->accept_client_thread(); });
 
         if (!silent_startup) {
@@ -12,7 +12,7 @@ namespace cl9s
             std::cout << "-----------------------------\n\n";
         }
 
-        return m_connection_thread;
+        pause();
     }
 
     void teapot_server::accept_client_thread() {
@@ -41,7 +41,7 @@ namespace cl9s
             }).detach();
         } // while (m_bKeepAcceptConnection)
 
-        printf("\n### accept client thread shutdown... ###\n\n");
+        (void)printf("\n### accept client thread shutdown... ###\n\n");
     }
 
     void teapot_server::handle_client_thread(sock client_socket) {
@@ -85,7 +85,7 @@ namespace cl9s
             inner_map.at(path)(std::move(req), std::move(res));
         }
 
-        close_socket(client_socket);
+        (void)close_socket(client_socket);
 #ifdef CONSOLE_LOG
         printf("socket %d closed.\n", client_socket);
 #endif

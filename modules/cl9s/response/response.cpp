@@ -1,9 +1,8 @@
-#include "response.h"
-#include "../teapot_server.h"
+#include <cl9s/response/response.h>
+#include <cl9s/teapot_server.h>
+#include <file/filereader.h>
 #include <time.h>
 #include <string.h>
-
-#include "../../file/filereader.h"
 
 #ifdef CONSOLE_LOG
 #include <iostream>
@@ -26,10 +25,10 @@ namespace cl9s
         time_t t;
         char date[37];
 
-        time(&t);
+        (void)time(&t);
         tm* tm = localtime(&t);
 
-        strftime(date, sizeof(date), "Date: %a, %d %b %Y %H:%M:%S KST\n", tm);
+        (void)strftime(date, sizeof(date), "Date: %a, %d %b %Y %H:%M:%S KST\n", tm);
 
         std::string response_text = std::string{create_status_header(code)}
                                         .append("Connection: Keep-Alive\n")

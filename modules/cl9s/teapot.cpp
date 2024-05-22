@@ -1,9 +1,8 @@
-#include "teapot.h"
+#include <cl9s/teapot.h>
 #include <signal.h>
 
 #if CONSOLE_LOG
 #include <iostream>
-#include <string.h>
 #endif
 
 namespace cl9s
@@ -12,11 +11,7 @@ namespace cl9s
         const bool& prevent_socket_creation,
         const int& reuse_address) : reuse_address(reuse_address)
     {
-
-        // request_method_from_string = {
-
-
-        signal(SIGPIPE, SIG_IGN);
+        (void)signal(SIGPIPE, SIG_IGN);
     }
 
     teapot::~teapot() 
