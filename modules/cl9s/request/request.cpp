@@ -91,7 +91,16 @@ namespace cl9s
     }
 
     const int request::parse_body(const std::string& body) {
-        std::cout << body << std::endl;
+        std::string content_type = get_querystring("Content-type");
+        if (content_type.compare("") != 0) {
+#ifdef CONSOLE_LOG
+            puts("Content-type not included in header.");
+#endif
+            return EXIT_FAILURE;
+        }
+
+        // TODO: parse
+
         return EXIT_SUCCESS;
     }
 
