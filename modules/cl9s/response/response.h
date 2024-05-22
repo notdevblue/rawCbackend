@@ -22,9 +22,6 @@ namespace cl9s
         const int send(const content::contents& data, const status& code = status::OK) const;
 
     private:
-        const std::string get_date_string() const;
-
-    private:
         sock& m_client_socket;
     };
 }

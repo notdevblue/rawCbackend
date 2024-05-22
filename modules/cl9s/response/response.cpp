@@ -22,25 +22,20 @@ namespace cl9s
         return m_client_socket;
     }
 
-    const std::string response::get_date_string() const {
+    const int response::send(const content::contents& data, const status& code) const {
         time_t t;
-        tm* tm;
         char date[37];
 
         time(&t);
-        tm = localtime(&t);
+        tm* tm = localtime(&t);
 
         strftime(date, sizeof(date), "Date: %a, %d %b %Y %H:%M:%S KST\n", tm);
 
-        return date;
-    }
-
-    const int response::send(const content::contents& data, const status& code) const {
         std::string response_text = std::string{create_status_header(code)}
                                         .append("Connection: Keep-Alive\n")
                                         .append(data.get_header_str())
                                         .append("Keep-Alive: timeout=5, max=1000\nServer: raw cxx\n")
-                                        .append(get_date_string())
+                                        .append(date)
                                         .append("\n")
                                         .append(data.get_data());
 
