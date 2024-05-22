@@ -110,20 +110,4 @@ namespace cl9s
         (void)close(listening_socket);
         return true;
     }
-
-    const int teapot_server::handle_receive_header(
-        sock& client_socket IN OUT,
-        std::function<const int(const char* buffer)> callback) {
-        char buffer[SERVER_BUFFER_SIZE] = {0};
-
-        if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
-            // remote closed connection
-#ifdef CONSOLE_LOG
-            puts("Non zero result");
-#endif
-            return EXIT_FAILURE;
-        }
-
-        return callback(buffer);
-    }
 }

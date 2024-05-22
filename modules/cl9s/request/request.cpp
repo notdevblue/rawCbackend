@@ -6,9 +6,10 @@
 
 namespace cl9s
 {
-    request::request() {
-        m_querystring = std::map<const std::string, std::string>();
-        m_header_contents = std::map<const std::string, std::string>();
+    request::request() : m_body_followed(false)
+                       , m_querystring(std::map<const std::string, std::string>())
+                       , m_header_contents(std::map<const std::string, std::string>())
+    {
         m_querystring["NULL"] = "";
     }
 
@@ -18,18 +19,17 @@ namespace cl9s
 
     const int request::set(const std::string& buffer) {
         std::size_t body_start_idx = buffer.find("\r\n\r\n");
+
         if (body_start_idx == std::string::npos) {
 #ifdef CONSOLE_LOG
-            printf("Header does not contains space for body.\n");
+            puts("Body followed after header.");
 #endif
-            // FIXME: not a bad request.
-            // body followed after this packet
-            return EXIT_FAILURE; // invalid header (bad reqeust)
+            m_body_followed = true;
         }
 
         if (parse_header(buffer.substr(0, body_start_idx)) != EXIT_SUCCESS) {
 #ifdef CONSOLE_LOG
-            printf("Header parse failed.\n");
+            puts("Header parse failed.");
 #endif
             return EXIT_FAILURE; // invalid header (bad_request)
         }
@@ -37,7 +37,7 @@ namespace cl9s
         if (body_start_idx + 1 < buffer.length()) {
             if (parse_body(buffer.substr(body_start_idx + (std::size_t)1)) != EXIT_SUCCESS) {
 #ifdef CONSOLE_LOG
-                printf("Body parse failed.\n");
+                puts("Body parse failed.");
 #endif
                 return EXIT_FAILURE; // bad request
             }
@@ -91,6 +91,7 @@ namespace cl9s
     }
 
     const int request::parse_body(const std::string& body) {
+        std::cout << body << std::endl;
         return EXIT_SUCCESS;
     }
 

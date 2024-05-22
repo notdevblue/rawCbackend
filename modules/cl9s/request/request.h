@@ -9,10 +9,12 @@
 
 namespace cl9s
 {
+    #define BODY_FOLLOWED_AFTER 2
+
     class request {
     public:
         request();
-        request(const request& other) = delete;
+        request(const request&) = delete;
         ~request();
 
     public:
@@ -26,9 +28,18 @@ namespace cl9s
         /// @return EXIT_SUCCESS on Success, EXIT_FAILURE on Fail
         const int set(const std::string& buffer);
 
+        /// @brief initializes body
+        /// @param body
+        /// @return EXIT_SUCCESS on Success, EXIT_FAILURE on Fail
+        const int parse_body(const std::string& body);
+
+        inline const bool& is_body_needs_parsing() const noexcept {
+            return m_body_followed;
+        }
+
+
     private:
         const int parse_header(const std::string& header);
-        const int parse_body(const std::string& body);
 
         void parse_querystring(const std::string& querystring);
 
@@ -38,5 +49,6 @@ namespace cl9s
         std::string m_location;
         std::string m_content;
         request_method m_method;
+        bool m_body_followed;
     };
 };

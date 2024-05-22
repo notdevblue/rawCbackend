@@ -41,7 +41,7 @@ namespace cl9s
             }).detach();
         } // while (m_bKeepAcceptConnection)
 
-        (void)printf("\n### accept client thread shutdown... ###\n\n");
+        puts("\n### accept client thread shutdown... ###\n");
     }
 
     void teapot_server::handle_client_thread(sock client_socket) {
@@ -51,18 +51,37 @@ namespace cl9s
         while (true) {
             request req = request();
             response res{client_socket};
+            char buffer[SERVER_BUFFER_SIZE]{0};
 
-            if (handle_receive_header(client_socket, [&req](auto buf) { return req.set(buf); }) != EXIT_SUCCESS) {
-                break; // close
+            if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
+                puts("Non zero result");
+            }
+
+            if (req.set(buffer) != EXIT_SUCCESS) {
+                break;
+            }
+            
+            // receive body if needed
+            if (req.is_body_needs_parsing()) {
+                std::memset(buffer, 0, SERVER_BUFFER_SIZE);
+                if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
+                    (void)res.send_400();
+                    break;
+                }
+
+                if (req.parse_body(buffer) != EXIT_SUCCESS) {
+                    (void)res.send_400();
+                    break;
+                }
             }
 
             const request_method& method = req.get_method();
             m_route_it = m_route.find(method);
             if (m_route_it == m_route.end()) {
 #ifdef CONSOLE_LOG
-                perror("Request method not found.\n");
+                puts("Request method not found.");
 #endif
-                if (res.send(content::text("Not Found."), status::NOT_FOUND) == EXIT_FAILURE) {
+                if (res.send_404() == EXIT_FAILURE) {
                     break;
                 }
                 continue;
@@ -74,9 +93,9 @@ namespace cl9s
             m_route_path_it = inner_map.find(path);
             if (m_route_path_it == inner_map.end()) {
 #ifdef CONSOLE_LOG
-                perror("Request path not found.\n");
+                puts("Request path not found.");
 #endif
-                if (res.send(content::text("Not Found."), status::NOT_FOUND) == EXIT_FAILURE) {
+                if (res.send_404() == EXIT_FAILURE) {
                     break;
                 }
                 continue;

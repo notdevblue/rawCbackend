@@ -78,11 +78,9 @@ namespace cl9s
         void accept_client_thread();
         void handle_client_thread(sock client_socket);
 
-        // TODO: Rename these functions
         sock handle_create();
         const bool handle_listen(sock& socket IN);
         const bool handle_accept(const sock& listening_socket, sock& client_socket OUT);
-        const int handle_receive_header(sock& client_socket IN OUT, std::function<const int(const char* buffer)> callback);
 
     private:
         uint16_t m_port;

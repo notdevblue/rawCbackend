@@ -21,6 +21,14 @@ namespace cl9s
         /// @return EXIT_SUCCESS on Success, EXIT_FAILURE on Fail
         const int send(const content::contents& data, const status& code = status::OK) const;
 
+        inline const int send_404() const {
+            return send(content::text("Not Found."), status::NOT_FOUND);
+        }
+
+        inline const int send_400() const {
+            return send(content::text("Bad Request."), status::BAD_REQUEST);
+        }
+
     private:
         sock& m_client_socket;
     };

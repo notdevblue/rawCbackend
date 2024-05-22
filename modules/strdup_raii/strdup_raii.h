@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdlib.h>
-#include <string.h>
+#include <cstring>
 
 class strdup_raii {
 public:
@@ -23,6 +23,7 @@ public:
         if (_source == nullptr) {
             throw "Null pointer exception";
         }
+
         str = strdup(_source);
     }
 
