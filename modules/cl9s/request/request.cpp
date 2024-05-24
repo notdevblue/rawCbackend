@@ -11,6 +11,7 @@ namespace cl9s
                        , m_header_contents(std::map<const std::string, std::string>())
     {
         m_querystring["NULL"] = "";
+        m_header_contents["NULL"] = "";
     }
 
     request::~request()
@@ -91,12 +92,9 @@ namespace cl9s
     }
 
     const int request::parse_body(const std::string& body) {
-        std::string content_type = get_querystring("Content-type");
-        if (content_type.compare("") != 0) {
-#ifdef CONSOLE_LOG
-            puts("Content-type not included in header.");
-#endif
-            return EXIT_FAILURE;
+        std::string content_type = get_header_content("Content-Type");
+        if (content_type.compare("") == 0) {
+            return EXIT_SUCCESS; // no body
         }
 
         // TODO: parse
@@ -125,6 +123,15 @@ namespace cl9s
         }
 
         return m_querystring.at(key);
+    }
+
+    const std::string& request::get_header_content(const char* key) const {
+        auto iter = m_header_contents.find(key);
+        if (iter == m_header_contents.end()) {
+            return m_header_contents.at("NULL");
+        }
+
+        return m_header_contents.at(key);
     }
 
     const std::string& request::get_location() const {

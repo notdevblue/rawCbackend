@@ -19,6 +19,7 @@ namespace cl9s
 
     public:
         const std::string& get_querystring(const char* key) const;
+        const std::string& get_header_content(const char* key) const;
         const std::string& get_location() const;
         const std::string& get_content() const;
         const request_method& get_method() const;
