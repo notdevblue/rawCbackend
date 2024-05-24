@@ -43,8 +43,7 @@ namespace cl9s
         const int parse_header(const std::string& header);
         const int parse_www_form_urlencoded(const std::string& body);
         const int parse_form_data(const std::string& body, const std::string& boundary);
-
-        void parse_querystring(const std::string& querystring);
+        void parse_querystring_like(const std::string& source, std::map<const std::string, std::string>& to);
 
     private:
         std::map<const std::string, std::string> m_querystring;

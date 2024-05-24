@@ -3,7 +3,7 @@
 namespace cl9s
 {
     const int request::parse_www_form_urlencoded(const std::string& body) {
-        // same as querystring
+        // parse_querystring_like(body, );
 
         return EXIT_SUCCESS;
     }

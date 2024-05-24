@@ -75,7 +75,7 @@ namespace cl9s
 
         // querystring
         if (query_begin_idx != std::string::npos) {
-            parse_querystring(href.substr(query_begin_idx + (std::size_t)1));
+            parse_querystring_like(href.substr(query_begin_idx + (std::size_t)1), m_querystring);
         }
 
         // etc
@@ -114,8 +114,8 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    void request::parse_querystring(const std::string& querystring) {
-        std::istringstream querystring_stream{querystring};
+    void request::parse_querystring_like(const std::string& source, std::map<const std::string, std::string>& to) {
+        std::istringstream querystring_stream{source};
         std::string key_value_string;
 
         for (; std::getline(querystring_stream, key_value_string, '&');) {
@@ -124,10 +124,10 @@ namespace cl9s
                 continue;
             }
 
-            m_querystring[key_value_string.substr(0, seperator_idx)] = key_value_string.substr(seperator_idx + 1);
+            to[key_value_string.substr(0, seperator_idx)] = key_value_string.substr(seperator_idx + 1);
         }
     }
-
+    
     const std::string& request::get_querystring(const char* key) const {
         auto iter = m_querystring.find(key);
         if (iter == m_querystring.end()) {
