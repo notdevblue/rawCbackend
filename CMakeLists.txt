@@ -22,6 +22,7 @@ add_executable(
     ${modulePath}/cl9s/teapot_server.cpp
     ${modulePath}/cl9s/teapot_client_loop.cpp
     ${modulePath}/cl9s/request/request.cpp
+    ${modulePath}/cl9s/request/request_body.cpp
     ${modulePath}/cl9s/response/response.cpp
     ${modulePath}/cl9s/content/content_types.cpp
     ${modulePath}/file/filereader.cpp

@@ -85,7 +85,7 @@ namespace cl9s
                 continue;
             }
 
-            m_header_contents[line.substr(0, kv_seperator_idx)] = line.substr(kv_seperator_idx + 1);
+            m_header_contents[line.substr(0, kv_seperator_idx)] = line.substr(kv_seperator_idx + 2);
         }
 
         return EXIT_SUCCESS;
@@ -96,8 +96,20 @@ namespace cl9s
         if (content_type.compare("") == 0) {
             return EXIT_SUCCESS; // no body
         }
+        
+        std::cout << content_type << "\nbody:\n" << body << std::endl;
 
-        // TODO: parse
+        std::size_t additional_attrib_idx = content_type.find_first_of(';');
+        const std::string type = content_type.substr(0, additional_attrib_idx);
+
+        if (type.compare("multipart/x_www_form_urlencoded")) {
+            return parse_www_form_urlencoded(body);
+        } else if (type.compare("multipart/form-data")) {
+            return parse_form_data(body, "boundary");
+        }
+
+        // unprocessed
+        m_content = body;
 
         return EXIT_SUCCESS;
     }
