@@ -6,7 +6,7 @@
 #include <csignal>
 
 const int PORT = 30000;
-std::shared_ptr<cl9s::teapot_server> g_serv;
+std::shared_ptr<cl9s::teapot_server> g_serv; // bad
 
 void graceful_shutdown(int sig) {
     std::signal(SIGTERM, SIG_DFL);
@@ -30,7 +30,9 @@ int main() {
     });
 
     g_serv->route(request_method::POST, "/login", [](const request& req, const response& res) {
-        std::cout << "ID: " << req.get_querystring("id") << std::endl;
+        const std::string* str_id = req.get_querystring("id");
+
+        std::cout << "ID: " << (str_id == nullptr ? "NULL" : *str_id) << std::endl;
 
         res.send(content::text("Success!"));
     });

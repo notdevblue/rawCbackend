@@ -9,9 +9,8 @@ namespace cl9s
     request::request() : m_body_followed(false)
                        , m_querystring(std::map<const std::string, std::string>())
                        , m_header_contents(std::map<const std::string, std::string>())
+                       , m_body(std::map<const std::string, std::string>())
     {
-        m_querystring["NULL"] = "";
-        m_header_contents["NULL"] = "";
     }
 
     request::~request()
@@ -19,14 +18,7 @@ namespace cl9s
     }
 
     const int request::set(const std::string& buffer) {
-        std::size_t body_start_idx = buffer.find("\r\n\r\n");
-
-        if (body_start_idx == std::string::npos) {
-#ifdef CONSOLE_LOG
-            puts("Body followed after header.");
-#endif
-            m_body_followed = true;
-        }
+        const std::size_t body_start_idx = buffer.find("\n\n");
 
         if (parse_header(buffer.substr(0, body_start_idx)) != EXIT_SUCCESS) {
 #ifdef CONSOLE_LOG
@@ -35,16 +27,19 @@ namespace cl9s
             return EXIT_FAILURE; // invalid header (bad_request)
         }
 
-        if (body_start_idx + 1 < buffer.length()) {
-            if (parse_body(buffer.substr(body_start_idx + (std::size_t)1)) != EXIT_SUCCESS) {
-#ifdef CONSOLE_LOG
-                puts("Body parse failed.");
-#endif
-                return EXIT_FAILURE; // bad request
-            }
+        if (get_header_content("Content-Type") == nullptr) {
+            return EXIT_SUCCESS; // no body
         }
 
-        return EXIT_SUCCESS;
+        if (buffer.length() <= body_start_idx + (std::size_t)2) {
+#ifdef CONSOLE_LOG
+            puts("Body followed after header.");
+#endif
+            m_body_followed = true;
+            return EXIT_SUCCESS;
+        }
+
+        return parse_body(buffer.substr(body_start_idx + (std::size_t)2));
     }
 
     const int request::parse_header(const std::string& header) {
@@ -85,6 +80,7 @@ namespace cl9s
                 continue;
             }
 
+            // Header: Contents
             m_header_contents[line.substr(0, kv_seperator_idx)] = line.substr(kv_seperator_idx + 2);
         }
 
@@ -92,19 +88,14 @@ namespace cl9s
     }
 
     const int request::parse_body(const std::string& body) {
-        std::string content_type = get_header_content("Content-Type");
-        if (content_type.compare("") == 0) {
-            return EXIT_SUCCESS; // no body
-        }
-        
-        std::cout << content_type << "\nbody:\n" << body << std::endl;
+        const std::string* content_type = get_header_content("Content-Type");
+        const std::size_t additional_attrib_idx = content_type->find_first_of(';');
+        const std::string type = content_type->substr(0, additional_attrib_idx);
 
-        std::size_t additional_attrib_idx = content_type.find_first_of(';');
-        const std::string type = content_type.substr(0, additional_attrib_idx);
-
-        if (type.compare("multipart/x_www_form_urlencoded")) {
-            return parse_www_form_urlencoded(body);
-        } else if (type.compare("multipart/form-data")) {
+        if (type.compare("application/x-www-form-urlencoded") == 0) {
+            parse_www_form_urlencoded(body);
+            return EXIT_SUCCESS;
+        } else if (type.compare("multipart/form-data") == 0) {
             return parse_form_data(body, "boundary");
         }
 
@@ -118,32 +109,34 @@ namespace cl9s
         std::istringstream querystring_stream{source};
         std::string key_value_string;
 
+        // FIXME: handle when there is no &
         for (; std::getline(querystring_stream, key_value_string, '&');) {
             std::size_t seperator_idx = key_value_string.find_first_of('=');
             if (seperator_idx == std::string::npos) {
                 continue;
             }
-
+            
+            // querystring=data
             to[key_value_string.substr(0, seperator_idx)] = key_value_string.substr(seperator_idx + 1);
         }
     }
     
-    const std::string& request::get_querystring(const char* key) const {
+    const std::string* request::get_querystring(const char* key) const {
         auto iter = m_querystring.find(key);
         if (iter == m_querystring.end()) {
-            return m_querystring.at("NULL");
+            return nullptr;
         }
 
-        return m_querystring.at(key);
+        return &m_querystring.at(key);
     }
 
-    const std::string& request::get_header_content(const char* key) const {
+    const std::string* request::get_header_content(const char* key) const {
         auto iter = m_header_contents.find(key);
         if (iter == m_header_contents.end()) {
-            return m_header_contents.at("NULL");
+            return nullptr;
         }
 
-        return m_header_contents.at(key);
+        return &m_header_contents.at(key);
     }
 
     const std::string& request::get_location() const {

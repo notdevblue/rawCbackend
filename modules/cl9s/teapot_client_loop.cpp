@@ -51,21 +51,23 @@ namespace cl9s
         while (true) {
             request req = request();
             response res{client_socket};
-            char buffer[SERVER_BUFFER_SIZE]{0};
+            std::string buffer(SERVER_BUFFER_SIZE, 0, std::allocator<char>());
 
-            if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
-                puts("Non zero result");
+            if (receive(client_socket, buffer.data(), buffer.capacity()) != EXIT_SUCCESS) {
                 break;
             }
 
+
+            buffer.erase(std::remove(buffer.begin(), buffer.end(), '\r'));
             if (req.set(buffer) != EXIT_SUCCESS) {
                 break;
             }
-            
+
             // receive body if needed
             if (req.is_body_needs_parsing()) {
-                std::memset(buffer, 0, SERVER_BUFFER_SIZE);
-                if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
+                // FIXME: CREATE NEW BUFFER
+                buffer.clear();
+                if (receive(client_socket, buffer.data(), buffer.capacity()) != EXIT_SUCCESS) {
                     (void)res.send_400();
                     break;
                 }
