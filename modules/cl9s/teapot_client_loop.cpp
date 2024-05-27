@@ -1,5 +1,5 @@
 #include <cl9s/teapot_server.h>
-#include "../strdup_raii/strdup_raii.h"
+#include <strdup_raii/strdup_raii.h>
 
 namespace cl9s
 {
@@ -51,31 +51,48 @@ namespace cl9s
         while (true) {
             request req = request();
             response res{client_socket};
-            std::string buffer(SERVER_BUFFER_SIZE, 0, std::allocator<char>());
+            char buffer[SERVER_BUFFER_SIZE] = {0};
 
-            if (receive(client_socket, buffer.data(), buffer.capacity()) != EXIT_SUCCESS) {
+            if (receive(client_socket, buffer, SERVER_BUFFER_SIZE) != EXIT_SUCCESS) {
                 break;
             }
 
+            std::remove(buffer, buffer + (SERVER_BUFFER_SIZE - 1), '\r');
 
-            buffer.erase(std::remove(buffer.begin(), buffer.end(), '\r'));
             if (req.set(buffer) != EXIT_SUCCESS) {
+                (void)res.send_400();
                 break;
             }
 
             // receive body if needed
             if (req.is_body_needs_parsing()) {
-                // FIXME: CREATE NEW BUFFER
-                buffer.clear();
-                if (receive(client_socket, buffer.data(), buffer.capacity()) != EXIT_SUCCESS) {
+                puts("Body expected.");
+
+                const std::string* content_length_str = req.get_header_content("Content-Length");
+                if (content_length_str == nullptr) {
+#ifdef CONSOLE_LOG
+                    puts("Content-Length not defined.");
+#endif
                     (void)res.send_400();
+                    break;
+                }
+                const int content_length = std::stoi(*content_length_str) + 1;
+                char* body_buffer = (char*)malloc(content_length * sizeof(char));
+                memset(body_buffer, 0, content_length);
+
+                if (receive(client_socket, body_buffer, content_length) != EXIT_SUCCESS) {
+                    (void)res.send_400();
+                    free(body_buffer);
                     break;
                 }
 
                 if (req.parse_body(buffer) != EXIT_SUCCESS) {
                     (void)res.send_400();
+                    free(body_buffer);
                     break;
                 }
+
+                free(body_buffer);
             }
 
             const request_method& method = req.get_method();
@@ -91,7 +108,7 @@ namespace cl9s
             }
 
             auto inner_map = m_route[method];
-            const std::string path = req.get_location();
+            const std::string& path = req.get_location();
 
             m_route_path_it = inner_map.find(path);
             if (m_route_path_it == inner_map.end()) {

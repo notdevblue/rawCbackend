@@ -32,9 +32,6 @@ namespace cl9s
         }
 
         if (buffer.length() <= body_start_idx + (std::size_t)2) {
-#ifdef CONSOLE_LOG
-            puts("Body followed after header.");
-#endif
             m_body_followed = true;
             return EXIT_SUCCESS;
         }
