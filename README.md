@@ -1,11 +1,5 @@
-# C++로만 만드는 백엔드 서버, 서드파티도 없는.
+# teapot
 
-## 왜 이런 짓을..
+c++ backend without 3rd-party
 
-재밌잖아요..
-
-그리고 공부도 되잖아요..
-
----
-
-~~*이사람 c++ 잘 못해요.*~~
+*this project is not a package*
