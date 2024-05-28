@@ -66,8 +66,6 @@ namespace cl9s
 
             // receive body if needed
             if (req.is_body_needs_parsing()) {
-                puts("Body expected.");
-
                 const std::string* content_length_str = req.get_header_content("Content-Length");
                 if (content_length_str == nullptr) {
 #ifdef CONSOLE_LOG
@@ -86,7 +84,7 @@ namespace cl9s
                     break;
                 }
 
-                if (req.parse_body(buffer) != EXIT_SUCCESS) {
+                if (req.parse_body(body_buffer) != EXIT_SUCCESS) {
                     (void)res.send_400();
                     free(body_buffer);
                     break;

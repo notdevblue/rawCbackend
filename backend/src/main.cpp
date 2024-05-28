@@ -30,9 +30,13 @@ int main() {
     });
 
     g_serv->route(request_method::POST, "/login", [](const request& req, const response& res) {
-        const std::string* str_id = req.get_querystring("id");
+        const std::string* str_id = req.get_content("id");
+        const std::string* str_pw = req.get_content("pw");
+        const std::string* str_null = req.get_content("none");
 
         std::cout << "ID: " << (str_id == nullptr ? "NULL" : *str_id) << std::endl;
+        std::cout << "PW: " << (str_pw == nullptr ? "NULL" : *str_pw) << std::endl;
+        std::cout << "none: " << (str_null == nullptr ? "NULL" : *str_null) << std::endl;
 
         res.send(content::text("Success!"));
     });

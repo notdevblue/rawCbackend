@@ -24,6 +24,7 @@ namespace cl9s
 
         const std::string& get_location() const;
         const std::string& get_content() const;
+        const std::string* get_content(const std::string& key) const;
         const request_method& get_method() const;
 
         /// @brief initializes requset class

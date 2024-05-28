@@ -5,7 +5,7 @@ namespace cl9s
 {
     void request::parse_www_form_urlencoded(const std::string& body) {
 
-        std::cout << "body:" << body << std::endl; // FIXME: header handled instead
+        std::cout << "body:" << body << std::endl;
 
         parse_querystring_like(body, m_body);
     }

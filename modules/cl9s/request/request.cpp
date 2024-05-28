@@ -144,6 +144,15 @@ namespace cl9s
         return m_content;
     }
 
+    const std::string* request::get_content(const std::string& key) const {
+        auto iter = m_body.find(key);
+        if (iter == m_body.end()) {
+            return nullptr;
+        }
+
+        return &m_body.at(key);
+    }
+
     const request_method& request::get_method() const {
         return m_method;
     }
