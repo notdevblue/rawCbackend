@@ -57,7 +57,7 @@ namespace cl9s
                 break;
             }
 
-            std::remove(buffer, buffer + (SERVER_BUFFER_SIZE - 1), '\r');
+            (void)std::remove(buffer, buffer + SERVER_BUFFER_SIZE, '\r');
 
             if (req.set(buffer) != EXIT_SUCCESS) {
                 (void)res.send_400();
@@ -83,6 +83,8 @@ namespace cl9s
                     free(body_buffer);
                     break;
                 }
+
+                (void)std::remove(body_buffer, body_buffer + content_length, '\r');
 
                 if (req.parse_body(body_buffer) != EXIT_SUCCESS) {
                     (void)res.send_400();

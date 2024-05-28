@@ -93,7 +93,7 @@ namespace cl9s
             parse_www_form_urlencoded(body);
             return EXIT_SUCCESS;
         } else if (type.compare("multipart/form-data") == 0) {
-            return parse_form_data(body, "boundary");
+            return parse_form_data(body, content_type->substr(additional_attrib_idx + 11));
         }
 
         // unprocessed
