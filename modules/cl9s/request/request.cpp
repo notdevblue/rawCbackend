@@ -36,7 +36,9 @@ namespace cl9s
             return EXIT_SUCCESS;
         }
 
-        return parse_body(buffer.substr(body_start_idx + (std::size_t)2));
+        parse_body(buffer.substr(body_start_idx + (std::size_t)2));
+
+        return EXIT_SUCCESS;
     }
 
     const int request::parse_header(const std::string& header) {
@@ -84,22 +86,23 @@ namespace cl9s
         return EXIT_SUCCESS;
     }
 
-    const int request::parse_body(const std::string& body) {
+    void request::parse_body(const std::string& body) {
         const std::string* content_type = get_header_content("Content-Type");
         const std::size_t additional_attrib_idx = content_type->find_first_of(';');
         const std::string type = content_type->substr(0, additional_attrib_idx);
 
         if (type.compare("application/x-www-form-urlencoded") == 0) {
             parse_www_form_urlencoded(body);
-            return EXIT_SUCCESS;
+            return;
         } else if (type.compare("multipart/form-data") == 0) {
-            return parse_form_data(body, content_type->substr(additional_attrib_idx + 11));
+            parse_form_data(body, content_type->substr(additional_attrib_idx + 11));
+            return;
         }
 
         // unprocessed
         m_content = body;
 
-        return EXIT_SUCCESS;
+        return;
     }
 
     void request::parse_querystring_like(const std::string& source, std::map<const std::string, std::string>& to) {

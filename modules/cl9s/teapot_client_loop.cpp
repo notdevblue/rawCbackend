@@ -86,12 +86,7 @@ namespace cl9s
 
                 (void)std::remove(body_buffer, body_buffer + content_length, '\r');
 
-                if (req.parse_body(body_buffer) != EXIT_SUCCESS) {
-                    (void)res.send_400();
-                    free(body_buffer);
-                    break;
-                }
-
+                req.parse_body(body_buffer);
                 free(body_buffer);
             }
 

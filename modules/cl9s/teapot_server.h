@@ -26,9 +26,10 @@ namespace cl9s
             m_bKeepAcceptConnection = true;
             m_route = std::map<request_method, std::map<std::string, route_lambda_t>>();
 
-            for (request_method req_method = (request_method)0;
+            for (request_method req_method = request_method::GET;
                 req_method < request_method::END_OF_ENUM;
-                req_method = (request_method)((int)req_method + 1)) {
+                req_method = (request_method)((int)req_method + 1))
+            {
                 m_route[req_method] = std::map<std::string, route_lambda_t>();
             }
         }

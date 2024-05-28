@@ -21,7 +21,8 @@ namespace cl9s
     typedef int sock;
 
     enum class request_method : int {
-        GET = 0,
+        NIL = 0,
+        GET,
         HEAD,
         POST,
         PUT,
