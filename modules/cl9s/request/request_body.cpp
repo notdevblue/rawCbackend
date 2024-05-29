@@ -16,21 +16,34 @@ namespace cl9s
             return;
         }
 
-        const std::string temp_content_str = body.substr(current_boundary_index + boundary.length() + 1);
+        const std::string temp_content_str = body.substr(current_boundary_index + boundary.length() + 1UL);
         const std::size_t next_boundary_index = temp_content_str.find(boundary);
-        if (next_boundary_index == std::string::npos || next_boundary_index < 3L) {
+        if (next_boundary_index == std::string::npos || next_boundary_index < 3UL) {
             return;
         }
 
-        const std::string content = temp_content_str.substr(0, next_boundary_index - 3);
+        const std::string content = temp_content_str.substr(0UL, next_boundary_index - 2UL);
 
-        std::cout << content << std::endl;
+        const std::size_t name_index = content.find("name=");
+        if (name_index == std::string::npos) {
+            parse_form_data(temp_content_str, boundary); // continue;
+            return;
+        }
 
-        // content-disposition: form-data; name="asfdasdf"; ...
-        // name="asdasdf" -> m_body[name] = data;
+        const std::size_t name_end_index = content.find('\n', name_index);
+        if (name_end_index == std::string::npos) {
+            parse_form_data(temp_content_str, boundary); // continue;
+            return;
+        }
 
-        const std::size_t name_index = content.find("name="); // get name -> name="<this>"\n
-        const std::size_t subcontent_begin_index = content.find("\n\n"); // get content -> \n\n<content>
+        const std::size_t subcontent_begin_index = content.find("\n\n");
+        if (subcontent_begin_index == std::string::npos) {
+            parse_form_data(temp_content_str, boundary); // continue;
+            return;
+        }
+
+        m_body[content.substr(name_index + 6UL, name_end_index - (name_index + 6UL) - 1UL)]
+            = content.substr(subcontent_begin_index + 2UL);
 
         parse_form_data(temp_content_str, boundary);
         return;
