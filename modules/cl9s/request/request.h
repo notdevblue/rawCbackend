@@ -50,7 +50,7 @@ namespace cl9s
     private:
         std::map<const std::string, std::string> m_querystring;
         std::map<const std::string, std::string> m_header_contents;
-        std::map<const std::string, std::string> m_body;
+        std::map<const std::string, std::string> m_body; // TODO: additional content may saved not only std::string, like filename
 
         std::string m_location;
         std::string m_content;
